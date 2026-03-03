@@ -1,11 +1,24 @@
 import React from "react";
-import AusFlag from "../../assets/flags/au.svg";
 import Button from "../../components/Button";
 import Countdown from "../../components/Countdown";
 import Skeleton from "../../components/Skeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 
-export default function NextRaceCard({ race, loading, error, onEdit, onRetry }) {
+const getFlagSrc = (countryCode) => {
+  if (!countryCode) return null;
+  return new URL(
+    `../../assets/flags/${countryCode.toLowerCase()}.svg`,
+    import.meta.url,
+  ).href;
+};
+export default function NextRaceCard({
+  race,
+  loading,
+  error,
+  onEdit,
+  onRetry,
+})
+ {
   return (
     <section className="max-w-5xl mx-auto mb-14">
       <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-10 shadow-2xl shadow-black/40">
@@ -13,17 +26,28 @@ export default function NextRaceCard({ race, loading, error, onEdit, onRetry }) 
 
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold tracking-wide">Next Race</h2>
-          <span className="px-4 py-1.5 text-xs tracking-widest rounded-full font-bold bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">OPEN</span>
+          <span className="px-4 py-1.5 text-xs tracking-widest rounded-full font-bold bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+            OPEN
+          </span>
         </div>
 
         {error ? (
-          <ErrorMessage message={error.message || "Failed to load next race."} onRetry={onRetry} />
+          <ErrorMessage
+            message={error.message || "Failed to load next race."}
+            onRetry={onRetry}
+          />
         ) : loading ? (
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="w-24 h-24 bg-zinc-700/40 rounded" />
             <div className="flex-1 text-center md:text-left">
-              <Skeleton lines={1} lineClass="h-6 w-48 rounded bg-zinc-700/40 mb-3" />
-              <Skeleton lines={1} lineClass="h-4 w-40 rounded bg-zinc-700/40 mb-2" />
+              <Skeleton
+                lines={1}
+                lineClass="h-6 w-48 rounded bg-zinc-700/40 mb-3"
+              />
+              <Skeleton
+                lines={1}
+                lineClass="h-4 w-40 rounded bg-zinc-700/40 mb-2"
+              />
               <Skeleton lines={1} lineClass="h-5 w-32 rounded bg-zinc-700/40" />
             </div>
             <div>
@@ -32,7 +56,11 @@ export default function NextRaceCard({ race, loading, error, onEdit, onRetry }) 
           </div>
         ) : (
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <img src={AusFlag} alt="Australian GP" className="w-24 h-24 object-contain" />
+            <img
+              src={getFlagSrc(race?.country_code)}
+              alt={race?.country || "Flag"}
+              className="w-24 h-24 object-contain"
+            />
 
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-2xl font-bold mb-3">{race?.name || "TBA"}</h3>
@@ -46,12 +74,15 @@ export default function NextRaceCard({ race, loading, error, onEdit, onRetry }) 
                   : "TBA"}
               </p>
               <p className="text-[#c1a362] font-semibold">
-                Closes in: {race ? <Countdown target={race.race_date} /> : "TBA"}
+                Closes in:{" "}
+                {race ? <Countdown target={race.race_date} /> : "TBA"}
               </p>
             </div>
 
             <div>
-              <Button className="px-5 py-2" onClick={onEdit}>Make Prediction</Button>
+              <Button className="px-5 py-2" onClick={onEdit}>
+                Make Prediction
+              </Button>
             </div>
           </div>
         )}
