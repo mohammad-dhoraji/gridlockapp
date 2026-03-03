@@ -4,7 +4,6 @@ import ErrorMessage from "../../components/ErrorMessage";
 
 // items: [{ rank, name, points }]
 export default function TopFivePreview({ items, loading, error, onViewFull, onRetry }) {
-  console.log("Top 5:", items );
   const renderRows = () => {
     if (items && items.length) {
       return items.map((it, idx) => (

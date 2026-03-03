@@ -51,7 +51,7 @@ export default function NextRaceCard({ race, loading, error, onEdit, onRetry }) 
             </div>
 
             <div>
-              <Button className="px-5 py-2" onClick={onEdit}>Edit Prediction</Button>
+              <Button className="px-5 py-2" onClick={onEdit}>Make Prediction</Button>
             </div>
           </div>
         )}
