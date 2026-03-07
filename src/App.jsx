@@ -21,7 +21,6 @@ import Onboarding from "./pages/Onboarding";
 import PublicOnly from "./components/PublicOnly";
 
 function App() {
-  console.log("API BASE:", import.meta.env.VITE_API_BASE_URL);
   return (
     <Routes>
       <Route

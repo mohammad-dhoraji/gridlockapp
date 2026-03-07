@@ -10,8 +10,16 @@ export default function useTopFive() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiRequest("/api/leaderboard/top5");
-      setItems(data);
+      const season = new Date().getUTCFullYear();
+      const payload = await apiRequest(
+        `/v1/leaderboards/global?season=${season}&page=1&page_size=5`,
+      );
+      const mapped = (payload?.data || []).map((row, index) => ({
+        rank: Number(row.global_rank ?? index + 1),
+        name: row.display_name || "Unknown",
+        points: Number(row.total_points || 0),
+      }));
+      setItems(mapped);
     } catch (err) {
       setError(err);
     } finally {
