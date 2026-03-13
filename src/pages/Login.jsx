@@ -109,7 +109,7 @@ function Login() {
             </p>
           </div>
 
-          <div className="relative z-10 text-sm text-zinc-300">(c) 2026 F1 Prediction Game</div>
+          <div className="relative z-10 text-sm text-zinc-300">© 2026 Gridlock</div>
         </div>
 
         <div className="bg-zinc-900/80 backdrop-blur-xl p-10 md:p-14 flex flex-col justify-center">
@@ -121,6 +121,9 @@ function Login() {
               {isLogin
                 ? "Log in to continue predicting."
                 : "Join the grid and start climbing."}
+            </p>
+            <p className="text-white/80 text-sm font-medium mb-4">
+              Formula 1 Prediction Platform
             </p>
           </div>
 

@@ -13,7 +13,7 @@ function RecentRaces({ predictions }) {
             No Predictions Yet
           </h2>
           <p className="text-zinc-400">
-            Make your first race prediction and start climbing the leaderboard.
+            Make your first prediction on Slipstream Live and start climbing the leaderboard.
           </p>
         </div>
       </section>

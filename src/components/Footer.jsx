@@ -9,12 +9,10 @@ function Footer() {
         {/* Brand */}
         <div>
           <h3 className="text-white text-lg font-semibold mb-3">
-            F1 Podium Predictor
+            Gridlock
           </h3>
-          <p className="leading-relaxed">
-            A competitive Formula 1 race prediction game. 
-            Predict podium finishers and Driver of the Day. 
-            Climb the leaderboard. Prove your race IQ.
+          <p className="leading-relaxed text-sm">
+            Predict the race. Beat the grid.
           </p>
         </div>
 
@@ -66,7 +64,7 @@ function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
-        © {new Date().getFullYear()} F1 Podium Predictor. All rights reserved.
+        © 2026 Gridlock
       </div>
     </footer>
   );

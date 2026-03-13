@@ -94,7 +94,7 @@ const Groups = () => {
             )}
 
             {!isLoading && !isError && !hasGroups && (
-              <p className="text-zinc-500">You are not in any groups yet.</p>
+              <p className="text-zinc-500">No groups yet. Create your first group on Gridlock.</p>
             )}
 
             {!isLoading && !isError && hasGroups && (

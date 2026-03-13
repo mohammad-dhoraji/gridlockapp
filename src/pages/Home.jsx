@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import Button from "../components/Button";
+import CalendarModal from "../components/CalendarModal";
 
 import useNextRace from "../features/races/useNextRace";
 import NextRaceCard from "../features/races/NextRaceCard";
@@ -12,8 +13,17 @@ import TopFivePreview from "../features/leaderboard/TopFivePreview";
 import useUserStats from "../features/user/useUserStats";
 import UserSnapshot from "../features/user/UserSnapshot";
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
+).replace(/\/+$/, "");
+
+const CALENDAR_FEED_URL = `${API_BASE_URL}/api/calendar/predictions.ics`;
+const GOOGLE_CALENDAR_URL = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(CALENDAR_FEED_URL)}`;
+const APPLE_CALENDAR_URL = CALENDAR_FEED_URL.replace(/^https?:\/\//i, "webcal://");
+
 function Home() {
   const navigate = useNavigate();
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
   const { race, loading: raceLoading, error: raceError, refetch: refetchRace } = useNextRace();
   const { items: topItems, loading: topLoading, error: topError, refetch: refetchTop } = useTopFive();
@@ -33,7 +43,17 @@ function Home() {
             Pick the Top 3 finishers and Driver of the Day before race start.
             Earn points based on accuracy.
           </p>
-          <Button className="px-6 py-3 text-lg" onClick={() => navigate("/predict")}>Make Prediction</Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button className="px-6 py-3 text-lg" onClick={() => navigate("/predict")}>
+              Make Prediction
+            </Button>
+            <Button
+              className="px-6 py-3 text-lg"
+              onClick={() => setIsCalendarModalOpen(true)}
+            >
+              Add to Calendar
+            </Button>
+          </div>
         </section>
 
         {/* Upcoming Race Section  */}
@@ -45,6 +65,14 @@ function Home() {
           <TopFivePreview items={topItems} loading={topLoading} error={topError} onViewFull={() => navigate("/leaderboard")} onRetry={refetchTop} />
         </section>
       </div>
+
+      <CalendarModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        googleUrl={GOOGLE_CALENDAR_URL}
+        appleUrl={APPLE_CALENDAR_URL}
+        icsUrl={CALENDAR_FEED_URL}
+      />
     </PageWrapper>
   );
 }

@@ -293,7 +293,7 @@ const GroupDetail = () => {
                 </div>
 
                 <div className="mt-6 text-center text-xs text-zinc-500">
-                  f1predict.app
+                  GridLock-app
                 </div>
               </div>
             </div>

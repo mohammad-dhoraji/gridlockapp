@@ -77,7 +77,7 @@ export function AppSidebar() {
       {/* Header */}
       <SidebarHeader className="px-6 py-6 border-b border-zinc-800">
         <div className="text-xl font-bold tracking-tight">
-          <span className="text-red-500">F1</span> Prediction
+          Gridlock
         </div>
       </SidebarHeader>
 
