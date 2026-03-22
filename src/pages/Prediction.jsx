@@ -4,9 +4,6 @@ import DriverSelect from "../components/DriverSelect";
 import Modal from "../components/Modal";
 
 import { apiPost, apiRequest } from "../lib/api";
-import CalendarModal from "../components/CalendarModal";
-
-
 
 const EMPTY_PREDICTION = {
   p1: "",
@@ -69,8 +66,6 @@ const Prediction = () => {
   const [hasExistingPrediction, setHasExistingPrediction] = useState(false);
 
   const [modal, setModal] = useState(CLOSED_MODAL);
-  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
-
 
   const openModal = useCallback((type, title, message) => {
     setModal({ isOpen: true, type, title, message });
@@ -166,12 +161,11 @@ const Prediction = () => {
 
   const getAvailableDrivers = useCallback(
     (fieldName) => {
-      // DOTD should allow all drivers
       if (fieldName === "dotd") {
         return drivers;
       }
 
-      // Prevent duplicate podium drivers only
+      // Prevent duplicate podium drivers
       const podiumDrivers = [prediction.p1, prediction.p2, prediction.p3];
 
       return drivers.filter((driverName) => {
@@ -241,7 +235,7 @@ const Prediction = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
         <p className="text-zinc-400 text-sm tracking-widest uppercase animate-pulse">
           Loading prediction data...
         </p>
@@ -251,7 +245,7 @@ const Prediction = () => {
 
   if (!race) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
         <p className="text-zinc-400 text-sm">No upcoming race is available.</p>
       </div>
     );
@@ -268,7 +262,6 @@ const Prediction = () => {
 
   return (
     <>
-
       <Modal
         isOpen={modal.isOpen}
         onClose={closeModal}
@@ -276,18 +269,13 @@ const Prediction = () => {
         title={modal.title}
         message={modal.message}
       />
-      <CalendarModal
-        isOpen={isCalendarModalOpen}
-        onClose={() => setIsCalendarModalOpen(false)}
-        race={race}
-      />
+     
 
-
-      <div className="min-h-screen bg-gradient-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-12 w-full">
+      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-12 w-full">
         <div className="max-w-5xl mx-auto">
           <div className="mb-14">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                 {race.name}
               </h1>
 
@@ -302,11 +290,11 @@ const Prediction = () => {
               {raceDateLabel}
             </p>
 
-            <div className="mt-6 h-[2px] w-full bg-gradient-to-r from-[#c1a362] via-zinc-700 to-transparent rounded-full" />
+            <div className="mt-6 h-0.5 w-full bg-linear-to-r from-[#c1a362] via-zinc-700 to-transparent rounded-full" />
           </div>
 
           <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-10 shadow-2xl shadow-black/40">
-            <div className="absolute -top-[2px] left-0 w-full h-[3px] bg-gradient-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
+            <div className="absolute -top-0.5 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
 
             <h2 className="text-2xl font-semibold mb-10 tracking-wide">
               Select Your Podium
@@ -352,7 +340,6 @@ const Prediction = () => {
               />
             </div>
 
-
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               {!isLocked ? (
                 <Button
@@ -372,16 +359,8 @@ const Prediction = () => {
                   Predictions locked
                 </div>
               )}
-              <Button
-                variant="secondary"
-                onClick={() => setIsCalendarModalOpen(true)}
-                className="w-full sm:w-auto px-6"
-                disabled={isLocked}
-              >
-                Add to Calendar
-              </Button>
+             
             </div>
-
           </div>
         </div>
       </div>

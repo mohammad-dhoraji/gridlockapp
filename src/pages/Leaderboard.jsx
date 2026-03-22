@@ -237,7 +237,7 @@ const Leaderboard = () => {
                 Season {season} standings
               </p>
             </div>
-            <Button onClick={loadLeaderboard} className="gap-2">Refresh</Button>
+    
           </div>
         </section>
 
