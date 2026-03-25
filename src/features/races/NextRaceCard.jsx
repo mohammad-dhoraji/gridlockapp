@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../../components/Button";
 import Countdown from "../../components/Countdown";
-import Loader from "../../components/Loader";
+import NextRaceSkeleton from "../../components/ui/NextRaceSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const getFlagSrc = (countryCode) => {
@@ -37,9 +37,7 @@ export default function NextRaceCard({
         </div>
 
         {loading ? (
-          <div className="py-8 flex justify-center">
-            <Loader size="small" text="SYNCING RACE DATA..." />
-          </div>
+          <NextRaceSkeleton />
         ) : error ? (
           <ErrorMessage
             message={error.message || "Failed to load next race."}

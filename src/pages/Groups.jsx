@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import PageWrapper from "../components/PageWrapper";
 import ApiMessage from "../components/ApiMessage";
-import Loader from "../components/Loader";
+import GroupsSkeleton from "../components/ui/GroupsSkeleton";
 import { useMyGroups } from "../hooks/useMyGroups";
 import { Share2, Plus, RefreshCw } from "lucide-react";
 import ShareModal from "../components/ShareModal";
@@ -45,6 +45,14 @@ const Groups = () => {
     navigate(`/join/${encodeURIComponent(normalizedJoinToken)}`);
   };
 
+  if (isLoading && !data) {
+    return (
+      <PageWrapper>
+        <GroupsSkeleton />
+      </PageWrapper>
+    );
+  }
+
   return (
     <PageWrapper>
       <div className="min-h-screen w-full overflow-x-hidden bg-linear-to-b from-neutral-800 via-neutral-950 to-black px-6 py-10 text-white">
@@ -65,20 +73,11 @@ const Groups = () => {
               <h2 className="text-xl font-semibold">Groups</h2>
 
               <div className="flex items-center gap-3">
-                {isFetching && !isLoading && (
-                  <Loader size="small" showProgress={false} showText={false} />
-                )}
                 <Button onClick={() => refetch()}>
                   <RefreshCw size={16} />
                 </Button>
               </div>
             </div>
-
-            {isLoading && !data?.groups && !isError && (
-              <div className="py-8 flex justify-center">
-                <Loader size="small" text="SYNCING RACE DATA..." />
-              </div>
-            )}
 
             {isError && (
               <div className="space-y-4">

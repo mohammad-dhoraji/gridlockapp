@@ -5,8 +5,9 @@ import ProfileHeader from "../components/ProfileHeader";
 import PerformanceSnapshot from "../components/PerformanceSnapshot";
 import RecentRaces from "../components/RecentRaces";
 import Achievements from "../components/Achievements";
+import ProfileSkeleton from "../components/ui/ProfileSkeleton";
 import { supabase } from "../lib/supabaseClient";
-import Loader from "../components/Loader";
+
 
 function Profile() {
   const { summary, predictions, loading, errorMessage } = useProfile();
@@ -17,7 +18,11 @@ function Profile() {
     navigate("/login");
   };
   if (loading) {
-    return <Loader fullScreen text="SYNCING RACE DATA..." />;
+    return (
+      <PageWrapper>
+        <ProfileSkeleton />
+      </PageWrapper>
+    );
   }
 
   if (errorMessage) {

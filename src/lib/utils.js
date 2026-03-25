@@ -4,9 +4,9 @@
 
 // Detect the next race: first upcoming or last completed
 export function detectNextRace(races) {
-  const upcoming = races.find((r) => r.status === 'upcoming');
+  const upcoming = races.find((r) => r.race_state === 'upcoming');
   if (upcoming) return upcoming.id;
-  const completed = [...races].filter((r) => r.status === 'completed');
+  const completed = [...races].filter((r) => r.race_state === 'results_ready' || r.race_state === 'scored');
   return completed.length > 0 ? completed[completed.length - 1].id : null;
 }
 import { clsx } from "clsx";

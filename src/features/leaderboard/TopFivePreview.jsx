@@ -1,5 +1,5 @@
 import React from "react";
-import Loader from "../../components/Loader";
+import LeaderboardPreviewSkeleton from "../../components/ui/LeaderboardPreviewSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 
 // items: [{ rank, name, points }]
@@ -42,9 +42,7 @@ export default function TopFivePreview({
       </div>
 
       {loading ? (
-        <div className="py-8 flex justify-center">
-          <Loader size="small" text="SYNCING RACE DATA..." />
-        </div>
+        <LeaderboardPreviewSkeleton />
       ) : error ? (
         <ErrorMessage
           message={error.message || "Failed to load leaderboard."}

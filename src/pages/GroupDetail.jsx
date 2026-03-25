@@ -5,7 +5,6 @@ import { Copy, Check } from "lucide-react";
 import Button from "../components/Button";
 import ApiMessage from "../components/ApiMessage";
 import Modal from "../components/Modal";
-import Loader from "../components/Loader";
 import { useGroupDetail } from "../hooks/useGroupDetail";
 import { deleteGroup, leaveGroup } from "../services/groupsService";
 import { queryClient } from "../lib/queryClient";
@@ -41,7 +40,6 @@ const GroupDetail = () => {
 
   const {
     data: group,
-    isFetching,
     isError,
     error,
     refetch,
@@ -136,11 +134,7 @@ const GroupDetail = () => {
         <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
           <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
 
-          {!group && !isError && (
-            <div className="py-8 flex justify-center">
-              <Loader size="small" text="SYNCING RACE DATA..." />
-            </div>
-          )}
+
 
           {isError && (
             <div className="space-y-4">
@@ -166,11 +160,6 @@ const GroupDetail = () => {
                 </h1>
                 <p className="text-zinc-400 text-sm mt-2">
                   {group.memberCount} Members
-                  {isFetching ? (
-                    <span className="ml-2 inline-flex align-middle">
-                      <Loader as="span" size="small" showProgress={false} showText={false} />
-                    </span>
-                  ) : null}
                 </p>
               </div>
 

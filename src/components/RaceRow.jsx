@@ -22,9 +22,9 @@ export default function RaceRow({ race, index, isNext = false }) {
     );
   }
 
-  const isUpcoming = race.status === "upcoming";
-  const isLocked = race.status === "locked";
-  const isCompleted = race.status === "completed";
+  const isUpcoming = race.race_state === "upcoming";
+  const isLocked = race.race_state === "locked";
+  const isCompleted = race.race_state === "results_ready" || race.race_state === "scored";
   const hasWinner = isCompleted && race.winner;
 
   const rowClass = `

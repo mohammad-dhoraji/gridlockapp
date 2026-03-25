@@ -2,7 +2,8 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import PageWrapper from "../components/PageWrapper";
 import Button from "../components/Button";
-import Loader from "../components/Loader";
+import LeaderboardPodiumSkeleton from "../components/ui/LeaderboardPodiumSkeleton";
+import LeaderboardRowSkeleton from "../components/ui/LeaderboardRowSkeleton";
 import { useLeaderboard } from "../hooks/useLeaderboard";
 
 const mapLeaderboardError = (error) => {
@@ -179,7 +180,33 @@ const Leaderboard = () => {
   );
 
   if (isLoading) {
-    return <Loader fullScreen text="SYNCING RACE DATA..." />;
+    return (
+      <PageWrapper>
+        <div className="min-h-screen w-full px-6 text-foreground overflow-x-hidden bg-linear-to-b from-neutral-800 via-neutral-950 to-black py-10">
+          <section className="max-w-4xl mx-auto py-10 border-b border-border">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-8">
+              <div className="animate-pulse space-y-2">
+                <div className="h-12 w-64 bg-zinc-800/50 rounded-xl" />
+                <div className="h-4 w-32 bg-zinc-800/30 rounded" />
+              </div>
+            </div>
+          </section>
+          <section className="max-w-4xl mx-auto py-10 border-t border-border">
+            <LeaderboardPodiumSkeleton />
+          </section>
+          <section className="max-w-4xl mx-auto py-10 border-t border-border">
+            <div className="bg-neutral-800/50 backdrop-blur-xl border border-border rounded-2xl p-4 sm:p-10 shadow-xl h-96">
+              <div className="h-10 w-48 bg-zinc-800/50 rounded-xl animate-pulse mb-8" />
+              <div className="space-y-2">
+                {[...Array(10)].map((_, i) => (
+                  <LeaderboardRowSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      </PageWrapper>
+    );
   }
 
   return (

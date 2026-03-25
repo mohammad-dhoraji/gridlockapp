@@ -104,8 +104,8 @@ const Prediction = () => {
   const isLocked =
     Boolean(raceStatus?.is_locked) ||
     isLockedByTime ||
-    !["upcoming", "scheduled"].includes(
-      String(raceStatus?.status || race?.status || ""),
+    !["upcoming"].includes(
+      String(raceStatus?.race_state || race?.race_state || ""),
     );
 
   const getAvailableDrivers = useCallback(
@@ -217,7 +217,7 @@ const Prediction = () => {
   }
 
   const raceDateLabel = formatRaceDate(race);
-  const currentStatus = String(raceStatus?.status || race.status || "unknown");
+  const currentStatus = String(raceStatus?.race_state || race.race_state || "unknown");
 
   const statusColor = !isLocked
     ? "bg-green-600/20 text-green-400 border border-green-500/30"

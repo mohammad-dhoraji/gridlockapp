@@ -10,7 +10,7 @@ const RaceStatusBadge = ({ status, isNext }) => {
     );
   }
 
-  if (status === 'completed') {
+  if (status === 'results_ready' || status === 'scored' || status === 'completed') {
     return (
       <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
         Completed

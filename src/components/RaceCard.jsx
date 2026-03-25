@@ -47,9 +47,14 @@
         ),
         };
 
-        const RaceCard = ({ race, isNext }) => {
-        const isCompleted = race.status === 'completed';
-        const isLocked = race.status === 'locked';
+import RaceCardSkeleton from './ui/RaceCardSkeleton';
+
+const RaceCard = ({ race, isNext }) => {
+  if (!race) {
+    return <RaceCardSkeleton />;
+  }
+        const isCompleted = race.race_state === 'results_ready' || race.race_state === 'scored';
+        const isLocked = race.race_state === 'locked';
 
         const cardClasses = [
             'group relative flex flex-col justify-between overflow-hidden rounded-lg border p-5 transition-all duration-200',
@@ -86,7 +91,7 @@
                     </p>
                 )}
                 </div>
-                <RaceStatusBadge status={race.status} isNext={isNext} />
+                <RaceStatusBadge status={race.race_state} isNext={isNext} />
             </div>
 
             {/* Bottom row */}

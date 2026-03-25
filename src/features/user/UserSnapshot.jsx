@@ -1,5 +1,5 @@
 import React from "react";
-import Loader from "../../components/Loader";
+import UserSnapshotSkeleton from "../../components/ui/UserSnapshotSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 
 function formatLastRaceScore(score) {
@@ -12,9 +12,7 @@ export default function UserSnapshot({ stats, loading = false, error, onRetry })
     return (
       <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-10 shadow-2xl shadow-black/40">
         <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
-        <div className="py-8 flex justify-center">
-          <Loader size="small" text="SYNCING RACE DATA..." />
-        </div>
+        <UserSnapshotSkeleton />
       </div>
     );
   }
