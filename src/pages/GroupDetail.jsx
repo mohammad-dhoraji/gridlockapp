@@ -5,6 +5,7 @@ import { Copy, Check } from "lucide-react";
 import Button from "../components/Button";
 import ApiMessage from "../components/ApiMessage";
 import Modal from "../components/Modal";
+import Loader from "../components/Loader";
 import { useGroupDetail } from "../hooks/useGroupDetail";
 import { deleteGroup, leaveGroup } from "../services/groupsService";
 import { queryClient } from "../lib/queryClient";
@@ -19,20 +20,6 @@ const mapGroupDetailError = (error) => {
     return "Network issue. Please check your connection and try again.";
   return "Unable to load group details right now. Please try again.";
 };
-
-const GroupDetailSkeleton = () => (
-  <div className="space-y-4">
-    {[1, 2, 3].map((item) => (
-      <div
-        key={item}
-        className="animate-pulse rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5"
-      >
-        <div className="h-4 w-48 rounded bg-zinc-700/70" />
-        <div className="mt-3 h-3 w-36 rounded bg-zinc-700/50" />
-      </div>
-    ))}
-  </div>
-);
 
 const GroupDetail = () => {
   const { groupId } = useParams();
@@ -149,7 +136,11 @@ const GroupDetail = () => {
         <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
           <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
 
-          {!group && !isError && <GroupDetailSkeleton />}
+          {!group && !isError && (
+            <div className="py-8 flex justify-center">
+              <Loader size="small" text="SYNCING RACE DATA..." />
+            </div>
+          )}
 
           {isError && (
             <div className="space-y-4">
@@ -175,7 +166,11 @@ const GroupDetail = () => {
                 </h1>
                 <p className="text-zinc-400 text-sm mt-2">
                   {group.memberCount} Members
-                  {isFetching ? " | Refreshing..." : ""}
+                  {isFetching ? (
+                    <span className="ml-2 inline-flex align-middle">
+                      <Loader as="span" size="small" showProgress={false} showText={false} />
+                    </span>
+                  ) : null}
                 </p>
               </div>
 
@@ -342,7 +337,7 @@ const GroupDetail = () => {
                   ))}
 
                   <div className="mt-6 text-center text-xs text-zinc-500">
-                    f1predict.app
+                   GridLock.app
                   </div>
                 </div>
               </div>

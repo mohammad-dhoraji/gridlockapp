@@ -42,21 +42,54 @@ const DEFAULT_EFFECT_OPTIONS = {
   }
 };
 
+const MAX_PIXEL_RATIO = 2;
+const ACTIVE_APP_BY_CONTAINER = new WeakMap();
+
 const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
   const hyperspeed = useRef(null);
   const appRef = useRef(null);
 
   useEffect(() => {
+    const container = hyperspeed.current;
+    if (!container) return undefined;
+
     if (appRef.current) {
       appRef.current.dispose();
       appRef.current = null;
-      const container = hyperspeed.current;
-      if (container) {
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-      }
     }
+
+    const existingApp = ACTIVE_APP_BY_CONTAINER.get(container);
+    if (existingApp) {
+      existingApp.dispose();
+      ACTIVE_APP_BY_CONTAINER.delete(container);
+    }
+
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    const disposeTexture = texture => {
+      if (texture && texture.isTexture) {
+        texture.dispose();
+      }
+    };
+
+    const disposeMaterial = material => {
+      if (!material) return;
+      Object.values(material).forEach(value => {
+        disposeTexture(value);
+      });
+
+      if (material.uniforms) {
+        Object.values(material.uniforms).forEach(uniform => {
+          if (uniform && typeof uniform === 'object') {
+            disposeTexture(uniform.value);
+          }
+        });
+      }
+
+      material.dispose();
+    };
     const mountainUniforms = {
       uFreq: { value: new THREE.Vector3(3, 6, 10) },
       uAmp: { value: new THREE.Vector3(30, 30, 20) }
@@ -352,16 +385,25 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         }
         this.container = container;
         this.hasValidSize = false;
+        this.rafId = null;
+        this.isPaused = false;
+        this.webglContextLost = false;
 
         const initW = Math.max(1, container.offsetWidth);
         const initH = Math.max(1, container.offsetHeight);
 
-        this.renderer = new THREE.WebGLRenderer({
-          antialias: false,
-          alpha: true
-        });
+        try {
+          this.renderer = new THREE.WebGLRenderer({
+            antialias: false,
+            alpha: true,
+            powerPreference: 'high-performance'
+          });
+        } catch (error) {
+          console.warn('WebGL not supported or blocked', error);
+          throw error;
+        }
         this.renderer.setSize(initW, initH, false);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
         this.composer = new EffectComposer(this.renderer);
         container.append(this.renderer.domElement);
 
@@ -380,7 +422,6 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           fogFar: { value: fog.far }
         };
         this.clock = new THREE.Clock();
-        this.assets = {};
         this.disposed = false;
 
         this.road = new Road(this, options);
@@ -414,13 +455,69 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         this.onTouchStart = this.onTouchStart.bind(this);
         this.onTouchEnd = this.onTouchEnd.bind(this);
         this.onContextMenu = this.onContextMenu.bind(this);
+        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+        this.onContextLost = this.onContextLost.bind(this);
+        this.onContextRestored = this.onContextRestored.bind(this);
+        this.scheduleTick = this.scheduleTick.bind(this);
+        this.cancelTick = this.cancelTick.bind(this);
+        this.pause = this.pause.bind(this);
+        this.resume = this.resume.bind(this);
 
         this.onWindowResize = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.onWindowResize);
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
+        this.renderer.domElement.addEventListener('webglcontextlost', this.onContextLost, false);
+        this.renderer.domElement.addEventListener('webglcontextrestored', this.onContextRestored, false);
 
         if (container.offsetWidth > 0 && container.offsetHeight > 0) {
           this.hasValidSize = true;
         }
+      }
+
+      onVisibilityChange() {
+        if (document.hidden) {
+          this.pause();
+          return;
+        }
+        this.resume();
+      }
+
+      onContextLost(event) {
+        event.preventDefault();
+        this.webglContextLost = true;
+        this.pause();
+      }
+
+      onContextRestored() {
+        if (this.disposed) return;
+        this.webglContextLost = false;
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
+        this.onWindowResize();
+        this.resume();
+      }
+
+      scheduleTick() {
+        if (this.disposed || this.isPaused || this.webglContextLost || this.rafId !== null) return;
+        this.rafId = requestAnimationFrame(this.tick);
+      }
+
+      cancelTick() {
+        if (this.rafId !== null) {
+          cancelAnimationFrame(this.rafId);
+          this.rafId = null;
+        }
+      }
+
+      pause() {
+        this.isPaused = true;
+        this.cancelTick();
+      }
+
+      resume() {
+        if (this.disposed || this.webglContextLost) return;
+        this.isPaused = false;
+        this.clock.getDelta();
+        this.scheduleTick();
       }
 
       onWindowResize() {
@@ -432,6 +529,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           return;
         }
 
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
         this.renderer.setSize(width, height);
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
@@ -466,32 +564,8 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         this.composer.addPass(smaaPass);
       }
 
-      loadAssets() {
-        const assets = this.assets;
-        return new Promise(resolve => {
-          const manager = new THREE.LoadingManager(resolve);
-
-          const searchImage = new Image();
-          const areaImage = new Image();
-          assets.smaa = {};
-          searchImage.addEventListener('load', function () {
-            assets.smaa.search = this;
-            manager.itemEnd('smaa-search');
-          });
-
-          areaImage.addEventListener('load', function () {
-            assets.smaa.area = this;
-            manager.itemEnd('smaa-area');
-          });
-          manager.itemStart('smaa-search');
-          manager.itemStart('smaa-area');
-
-          searchImage.src = SMAAEffect.searchImageDataURL;
-          areaImage.src = SMAAEffect.areaImageDataURL;
-        });
-      }
-
       init() {
+        if (this.disposed) return;
         this.initPasses();
         const options = this.options;
         this.road.init();
@@ -513,7 +587,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
 
         this.container.addEventListener('contextmenu', this.onContextMenu);
 
-        this.tick();
+        this.scheduleTick();
       }
 
       onMouseDown(ev) {
@@ -585,7 +659,10 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       }
 
       dispose() {
+        if (this.disposed) return;
         this.disposed = true;
+        this.pause();
+        document.removeEventListener('visibilitychange', this.onVisibilityChange);
 
         if (this.scene) {
           this.scene.traverse(object => {
@@ -596,9 +673,9 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
 
             if (obj.material) {
               if (Array.isArray(obj.material)) {
-                obj.material.forEach(material => material.dispose());
+                obj.material.forEach(disposeMaterial);
               } else {
-                obj.material.dispose();
+                disposeMaterial(obj.material);
               }
             }
           });
@@ -606,6 +683,8 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         }
 
         if (this.renderer) {
+          this.renderer.domElement.removeEventListener('webglcontextlost', this.onContextLost, false);
+          this.renderer.domElement.removeEventListener('webglcontextrestored', this.onContextRestored, false);
           this.renderer.dispose();
           this.renderer.forceContextLoss();
           if (this.renderer.domElement && this.renderer.domElement.parentNode) {
@@ -627,6 +706,15 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           this.container.removeEventListener('touchcancel', this.onTouchEnd);
           this.container.removeEventListener('contextmenu', this.onContextMenu);
         }
+
+        this.road = null;
+        this.leftCarLights = null;
+        this.rightCarLights = null;
+        this.leftSticks = null;
+        this.scene = null;
+        this.camera = null;
+        this.composer = null;
+        this.renderer = null;
       }
 
       setSize(width, height, updateStyles) {
@@ -634,12 +722,14 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           this.hasValidSize = false;
           return;
         }
+        this.renderer.setSize(width, height, updateStyles);
         this.composer.setSize(width, height, updateStyles);
         this.hasValidSize = true;
       }
 
       tick() {
-        if (this.disposed) return;
+        this.rafId = null;
+        if (this.disposed || this.isPaused || this.webglContextLost) return;
 
         if (!this.hasValidSize) {
           const w = this.container.offsetWidth;
@@ -651,7 +741,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
             this.composer.setSize(w, h);
             this.hasValidSize = true;
           } else {
-            requestAnimationFrame(this.tick);
+            this.scheduleTick();
             return;
           }
         }
@@ -670,7 +760,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           this.update(delta);
         }
 
-        requestAnimationFrame(this.tick);
+        this.scheduleTick();
       }
     }
 
@@ -1148,31 +1238,44 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       if (width <= 0 || height <= 0) return false;
-      const needResize = canvas.width !== width || canvas.height !== height;
+      const pixelRatio = renderer.getPixelRatio();
+      const targetWidth = Math.floor(width * pixelRatio);
+      const targetHeight = Math.floor(height * pixelRatio);
+      const needResize = canvas.width !== targetWidth || canvas.height !== targetHeight;
       if (needResize) {
         setSize(width, height, false);
       }
       return needResize;
     }
 
-    const container = hyperspeed.current;
-    if (!container) return;
-
     const options = {
       ...DEFAULT_EFFECT_OPTIONS,
       ...effectOptions,
-      colors: { ...DEFAULT_EFFECT_OPTIONS.colors, ...effectOptions.colors }
+      colors: { ...DEFAULT_EFFECT_OPTIONS.colors, ...(effectOptions?.colors || {}) }
     };
     options.distortion = distortions[options.distortion];
 
-    const myApp = new App(container, options);
+    let myApp;
+    try {
+      myApp = new App(container, options);
+    } catch {
+      return undefined;
+    }
+
     appRef.current = myApp;
-    myApp.loadAssets().then(myApp.init);
+    ACTIVE_APP_BY_CONTAINER.set(container, myApp);
+    myApp.init();
 
     return () => {
-      if (appRef.current) {
+      if (appRef.current === myApp) {
         appRef.current.dispose();
         appRef.current = null;
+      }
+      if (ACTIVE_APP_BY_CONTAINER.get(container) === myApp) {
+        ACTIVE_APP_BY_CONTAINER.delete(container);
+      }
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
       }
     };
   }, [effectOptions]);

@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../../components/Button";
 import Countdown from "../../components/Countdown";
-import Skeleton from "../../components/Skeleton";
+import Loader from "../../components/Loader";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const getFlagSrc = (countryCode) => {
@@ -13,6 +13,7 @@ const getFlagSrc = (countryCode) => {
 };
 export default function NextRaceCard({
   race,
+  loading = false,
   error,
   onEdit,
   onRetry,
@@ -35,28 +36,18 @@ export default function NextRaceCard({
           ) : null}
         </div>
 
-        {error ? (
+        {loading ? (
+          <div className="py-8 flex justify-center">
+            <Loader size="small" text="SYNCING RACE DATA..." />
+          </div>
+        ) : error ? (
           <ErrorMessage
             message={error.message || "Failed to load next race."}
             onRetry={onRetry}
           />
         ) : !race ? (
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="w-24 h-24 bg-zinc-700/40 rounded" />
-            <div className="flex-1 text-center md:text-left">
-              <Skeleton
-                lines={1}
-                lineClass="h-6 w-48 rounded bg-zinc-700/40 mb-3"
-              />
-              <Skeleton
-                lines={1}
-                lineClass="h-4 w-40 rounded bg-zinc-700/40 mb-2"
-              />
-              <Skeleton lines={1} lineClass="h-5 w-32 rounded bg-zinc-700/40" />
-            </div>
-            <div>
-              <Skeleton lines={1} lineClass="h-8 w-24 rounded bg-zinc-700/40" />
-            </div>
+          <div className="text-center text-zinc-400 py-8">
+            No upcoming race available right now.
           </div>
         ) : (
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">

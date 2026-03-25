@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Loader from "./Loader";
 
 function NoUsernameOnly({ children }) {
   const { user, loading } = useAuth();
@@ -50,11 +51,7 @@ function NoUsernameOnly({ children }) {
   }, [userId, loading]);
 
   if (loading || checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-900 text-white">
-        Loading...
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   // Redirect to home if user already has a username

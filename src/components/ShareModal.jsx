@@ -21,8 +21,8 @@ const ShareModal = ({ isOpen, onClose, inviteLink, groupName }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Join my F1 group: ${groupName}`,
-          text: `Join my private F1 prediction group!`,
+          title: `Join my Grid: ${groupName}`,
+          text: `Join my private F1 prediction group on GridLock!`,
           url: inviteLink,
         });
       } catch {
@@ -32,7 +32,7 @@ const ShareModal = ({ isOpen, onClose, inviteLink, groupName }) => {
   };
 
   const whatsappShare = `https://wa.me/?text=${encodeURIComponent(
-    `Join my F1 prediction group: ${inviteLink}`
+    `Join my F1 prediction group on GridLock : ${inviteLink}`
   )}`;
 
   return (

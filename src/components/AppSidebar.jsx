@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { GridLockLogo } from "../components/branding";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -76,9 +77,7 @@ export function AppSidebar() {
     <Sidebar className="bg-neutral-950 border-r border-zinc-800 text-white">
       {/* Header */}
       <SidebarHeader className="px-6 py-6 border-b border-zinc-800">
-        <div className="text-xl font-bold tracking-tight">
-          Gridlock
-        </div>
+        <GridLockLogo size={24} mode="dark" />
       </SidebarHeader>
 
       {/* Menu */}

@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import PageWrapper from "../components/PageWrapper";
 import Button from "../components/Button";
-import { apiRequest } from "../lib/api";
+import Loader from "../components/Loader";
+import { useLeaderboard } from "../hooks/useLeaderboard";
 
 const mapLeaderboardError = (error) => {
   if (error?.status === 401) return "Please sign in to view leaderboard.";
@@ -12,16 +13,6 @@ const mapLeaderboardError = (error) => {
   }
   return "Failed to load leaderboard.";
 };
-
-
-
-const toRows = (payloadRows) =>
-  (payloadRows || []).map((row, index) => ({
-    rank: Number(row.global_rank ?? index + 1),
-    username: row.display_name || "Unknown",
-    totalPoints: Number(row.total_points || 0),
-    avatar_url: row.avatar_url || null,
-  }));
 
 const LeaderboardRow = ({ user, isHighlighted = false, className = "" }) => (
   <motion.div
@@ -62,10 +53,10 @@ const TopPodium = ({ topThree }) => {
   const p3 = topThree[2];
 
   const renderCard = (user, position) => {
-    if (!user) return <div className="w-[140px] md:w-[170px] shrink-0" key={`empty-${position}`} />;
+    if (!user) return <div className="w-35 md:w-42.5 shrink-0" key={`empty-${position}`} />;
 
     const isP1 = position === 1;
-    const rankLabel = position === 1 ? "🥇" : position === 2 ? "🥈" : "🥉";
+    const rankLabel = position === 1 ? "1st" : position === 2 ? "2nd" : "3rd";
 
     return (
       <motion.div
@@ -78,10 +69,10 @@ const TopPodium = ({ topThree }) => {
           delay: position === 1 ? 0.1 : position === 2 ? 0.25 : 0.4,
           ease: "easeOut"
         }}
-        className={`relative flex flex-col items-center shrink-0 w-[140px] md:w-[170px] bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl overflow-hidden ${
+        className={`relative flex flex-col items-center shrink-0 w-35 md:w-42.5 bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl overflow-hidden ${
           isP1 
-            ? "h-[260px] md:h-[300px] ring-2 ring-primary/50 scale-105 z-10" 
-            : "h-[220px] md:h-[250px] z-0 opacity-95"
+            ? "h-65 md:h-[300px] ring-2 ring-primary/50 scale-105 z-10" 
+            : "h-55 md:h-[250px] z-0 opacity-95"
         }`}
       >
         {isP1 && (
@@ -127,101 +118,68 @@ const TopPodium = ({ topThree }) => {
   );
 };
 
-const CurrentUserSection = ({ me, neighbors }) => {
-  if (!me) return null;
+// const CurrentUserSection = ({ me, neighbors }) => {
+//   if (!me) return null;
 
-  const isTop10 = me.rank <= 10;
-  const above = neighbors.filter(n => n.rank < me.rank).slice(0,2);
-  const below = neighbors.filter(n => n.rank > me.rank).slice(0,2);
+//   const isTop10 = me.rank <= 10;
+//   const above = neighbors.filter(n => n.rank < me.rank).slice(0,2);
+//   const below = neighbors.filter(n => n.rank > me.rank).slice(0,2);
 
-  return (
-    <motion.section className="max-w-2xl mx-auto py-10">
-      <motion.div 
-        className="bg-linear-to-r from-primary/30 via-primary/20 to-secondary/20 backdrop-blur-xl border border-primary/50 rounded-3xl p-4 sm:p-8 shadow-2xl ring-2 ring-primary/40"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h3 className="text-2xl font-f1 font-black uppercase tracking-wider mb-6 text-center">
-          {isTop10 ? "You" : "Your Position"}
-        </h3>
+//   return (
+//     <motion.section className="max-w-2xl mx-auto py-10">
+//       <motion.div 
+//         className="bg-linear-to-r from-primary/30 via-primary/20 to-secondary/20 backdrop-blur-xl border border-primary/50 rounded-3xl p-4 sm:p-8 shadow-2xl ring-2 ring-primary/40"
+//         initial={{ opacity: 0, y: 20 }}
+//         whileInView={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.5 }}
+//       >
+//         <h3 className="text-2xl font-f1 font-black uppercase tracking-wider mb-6 text-center">
+//           {isTop10 ? "You" : "Your Position"}
+//         </h3>
         
-        <div className="space-y-3 max-h-96 overflow-y-auto">
-          {!isTop10 && above.map(user => (
-            <LeaderboardRow key={user.rank} user={user} />
-          ))}
+//         <div className="space-y-3 max-h-96 overflow-y-auto">
+//           {!isTop10 && above.map(user => (
+//             <LeaderboardRow key={user.rank} user={user} />
+//           ))}
           
-          {/* Highlighted Me */}
-          <LeaderboardRow 
-            user={me} 
-            isHighlighted={true}
-            className="scale-105 shadow-xl ring-4 ring-primary/60"
-          />
+//           {/* Highlighted Me */}
+//           <LeaderboardRow 
+//             user={me} 
+//             isHighlighted={true}
+//             className="scale-105 shadow-xl ring-4 ring-primary/60"
+//           />
           
-          {!isTop10 && below.map(user => (
-            <LeaderboardRow key={user.rank} user={user} />
-          ))}
-        </div>
-      </motion.div>
-    </motion.section>
-  );
-};
+//           {!isTop10 && below.map(user => (
+//             <LeaderboardRow key={user.rank} user={user} />
+//           ))}
+//         </div>
+//       </motion.div>
+//     </motion.section>
+//   );
+// };
 
 const Leaderboard = () => {
-
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const season = useMemo(() => new Date().getUTCFullYear(), []);
-
-  const loadLeaderboard = useCallback(async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await apiRequest(`/v1/leaderboard/context?season=${season}`);
-      setData(response);
-    } catch (error) {
-      console.error("Leaderboard error:", error);
-      // Fallback to old API if context not available
-      console.warn("Context API not found, falling back to paginated");
-      const fallback = await apiRequest(`/v1/leaderboards/global?season=${season}&page=1&page_size=20`);
-      setData({
-        top: toRows(fallback?.data),
-        me: null,
-        neighbors: []
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [season]);
-
-  useEffect(() => {
-    loadLeaderboard();
-  }, [loadLeaderboard]);
+  const { data, isLoading, isError, error, refetch } = useLeaderboard({
+    mode: "context",
+    season,
+  });
 
   const topThree = useMemo(() => data?.top?.slice(0, 3) || [], [data]);
   const rankingList = useMemo(() => data?.top?.slice(3) || [], [data]);
-  const me = useMemo(() => {
-    if (data?.me) return data.me;
-    // Try find in top
-    return data?.top?.find(u => u.username === 'You') || null;
-  }, [data]);
-  const neighbors = useMemo(() => data?.neighbors || [], [data]);
+  // const me = useMemo(() => {
+  //   if (data?.me) return data.me;
+  //   // Try find in top
+  //   return data?.top?.find(u => u.username === 'You') || null;
+  // }, [data]);
+  // const neighbors = useMemo(() => data?.neighbors || [], [data]);
+  const errorMessage = useMemo(
+    () => (isError ? mapLeaderboardError(error) : ""),
+    [error, isError],
+  );
 
-  if (loading) {
-    return (
-      <PageWrapper>
-        <div className="min-h-screen w-full px-6 text-foreground overflow-x-hidden bg-linear-to-b from-neutral-800 via-neutral-950 to-black py-10">
-          <section className="max-w-4xl mx-auto py-10 border-b border-border">
-            <motion.div className="text-muted-foreground text-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-              Loading leaderboard...
-            </motion.div>
-          </section>
-        </div>
-      </PageWrapper>
-    );
+  if (isLoading) {
+    return <Loader fullScreen text="SYNCING RACE DATA..." />;
   }
 
   return (
@@ -230,7 +188,7 @@ const Leaderboard = () => {
         <section className="max-w-4xl mx-auto py-10 border-b border-border">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 sm:gap-6 mb-8">
             <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-f1 font-black uppercase text-foreground">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-f1 font-black uppercase bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                 Global Leaderboard
               </h1>
               <p className="font-mono text-sm uppercase tracking-wider text-muted-foreground mt-2">
@@ -241,12 +199,12 @@ const Leaderboard = () => {
           </div>
         </section>
 
-        {error ? (
+        {isError ? (
           <section className="max-w-4xl mx-auto py-10">
             <motion.div className="bg-background/50 border border-border p-8 rounded-2xl text-center text-muted-foreground max-w-md mx-auto" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              {error}
+              {errorMessage}
               <div className="mt-6">
-                <Button onClick={loadLeaderboard} className="gap-2">Retry</Button>
+                <Button onClick={() => refetch()} className="gap-2">Retry</Button>
               </div>
             </motion.div>
           </section>
@@ -282,7 +240,7 @@ const Leaderboard = () => {
             </motion.section>
 
             {/* Current User */}
-            <CurrentUserSection me={me} neighbors={neighbors} />
+            {/* <CurrentUserSection me={me} neighbors={neighbors} /> */}
           </>
         )}
       </div>
@@ -291,4 +249,3 @@ const Leaderboard = () => {
 };
 
 export default Leaderboard;
-

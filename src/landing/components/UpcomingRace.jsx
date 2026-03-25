@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef } from "react";
 import { motion as Motion } from "framer-motion";
 import { animate, createMotionPath, svg } from "animejs";
 import Countdown from "../../components/Countdown";
-import Skeleton from "../../components/Skeleton";
+import Loader from "../../components/Loader";
 import { tracks } from "../../data/trackPaths";
 import { useNextRace } from "../../hooks/useNextRace";
+import { Link } from "react-router-dom";
 import { LandingButton } from "./LandingButton";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-IN", {
@@ -48,11 +49,10 @@ const UpcomingRaceShell = ({ children }) => (
   </section>
 );
 
-const UpcomingRaceSkeleton = () => (
+const UpcomingRaceLoader = () => (
   <UpcomingRaceShell>
-    <div className="space-y-6">
-      <Skeleton lines={4} lineClass="h-4 rounded bg-zinc-700/40" />
-      <div className="mx-auto h-44 w-full max-w-md rounded-lg border border-zinc-800/80 bg-zinc-900/40" />
+    <div className="py-8 flex justify-center">
+      <Loader size="small" text="SYNCING RACE DATA..." />
     </div>
   </UpcomingRaceShell>
 );
@@ -109,7 +109,7 @@ const UpcomingRace = () => {
   }, [trackPath]);
 
   if (isLoading && !race) {
-    return <UpcomingRaceSkeleton />;
+    return <UpcomingRaceLoader />;
   }
 
   if (isError) {
@@ -202,13 +202,21 @@ const UpcomingRace = () => {
             </div>
           </div>
 
-          <div className="mt-6 flex justify-center md:justify-end">
-            <a href="/login">
-              <LandingButton variant="racing" size="lg">
-                Make Predictions
+          <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-end">
+            <div className="flex-1 md:flex-none">
+              <a href="/login">
+                <LandingButton variant="racing" size="lg">
+                  Make Predictions
+                </LandingButton>
+              </a>
+            </div>
+            <Link to="/calendar">
+              <LandingButton variant="racingOutline" size="lg">
+                View Full Calendar
               </LandingButton>
-            </a>
+            </Link>
           </div>
+
         </Motion.div>
       </div>
     </section>

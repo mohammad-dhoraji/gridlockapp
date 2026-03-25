@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "./Loader";
 
 export default function Button({
   children,
@@ -6,6 +7,7 @@ export default function Button({
   type = "button",
   disabled = false,
   loading = false,
+  loadingText = "Processing",
   className = "",
 }) {
   return (
@@ -31,7 +33,14 @@ export default function Button({
         ${className}
       `}
     >
-      {loading ? "Submitting..." : children}
+      {loading ? (
+        <span className="flex items-center justify-center gap-2">
+          <Loader as="span" size="small" showProgress={false} showText={false} />
+          <span>{loadingText}</span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }

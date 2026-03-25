@@ -1,9 +1,15 @@
 function RecentRaces({ predictions }) {
   const formatPoints = (points) => {
-    if (points == null) return "—";
+    if (points == null) return "-";
     if (points > 0) return `+${points}`;
     return `${points}`;
   };
+
+  const formatPodium = (drivers = {}) =>
+    [drivers.p1, drivers.p2, drivers.p3].filter(Boolean).join(" / ") || "-";
+
+  const hasOfficialResult = (drivers = {}) =>
+    Boolean(drivers.p1 || drivers.p2 || drivers.p3 || drivers.dotd);
 
   if (!predictions || predictions.length === 0) {
     return (
@@ -28,17 +34,23 @@ function RecentRaces({ predictions }) {
         </h2>
 
         <div className="space-y-4">
-          {predictions.slice(0, 5).map((race) => (
+          {predictions.map((race) => (
             <div
-              key={race.id}
+              key={race.raceId}
               className="flex justify-between items-center border-b border-zinc-800 pb-3"
             >
               <div>
                 <p className="font-semibold">
-                  {race.races?.name}
+                  {race.raceName}
                 </p>
                 <p className="text-sm text-zinc-400">
-                  Predicted: {race.p1} • {race.p2} • {race.p3}
+                  Predicted: {formatPodium(race.predicted)}
+                  {race.predicted?.dotd ? ` / DOTD: ${race.predicted.dotd}` : ""}
+                </p>
+                <p className="text-sm text-zinc-500">
+                  {hasOfficialResult(race.actual)
+                    ? `Official: ${formatPodium(race.actual)}${race.actual?.dotd ? ` / DOTD: ${race.actual.dotd}` : ""}`
+                    : "Official results pending"}
                 </p>
               </div>
               <span className="font-bold">

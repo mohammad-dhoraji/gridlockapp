@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Loader from "./Loader";
 
 const sanitizeRedirectPath = (path) => {
   if (typeof path !== "string" || path.length === 0) return "/home";
@@ -17,7 +18,7 @@ function PublicOnly({ children }) {
   const params = new URLSearchParams(location.search);
   const redirectPath = sanitizeRedirectPath(params.get("redirect"));
 
-  if (loading) return null;
+  if (loading) return <Loader fullScreen />;
 
   if (user) {
     return <Navigate to={redirectPath} replace />;

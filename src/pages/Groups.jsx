@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import PageWrapper from "../components/PageWrapper";
 import ApiMessage from "../components/ApiMessage";
+import Loader from "../components/Loader";
 import { useMyGroups } from "../hooks/useMyGroups";
 import { Share2, Plus, RefreshCw } from "lucide-react";
 import ShareModal from "../components/ShareModal";
@@ -18,20 +19,6 @@ const mapGroupsLoadError = (error) => {
 
   return "Unable to load your groups right now. Please try again.";
 };
-
-const GroupsSkeleton = () => (
-  <div className="space-y-4">
-    {[1, 2, 3].map((item) => (
-      <div
-        key={item}
-        className="animate-pulse rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5"
-      >
-        <div className="h-4 w-48 rounded bg-zinc-700/70" />
-        <div className="mt-3 h-3 w-36 rounded bg-zinc-700/50" />
-      </div>
-    ))}
-  </div>
-);
 
 const Groups = () => {
   const [joinToken, setJoinToken] = useState("");
@@ -79,9 +66,7 @@ const Groups = () => {
 
               <div className="flex items-center gap-3">
                 {isFetching && !isLoading && (
-                  <span className="text-xs text-zinc-500 uppercase tracking-wide">
-                    Refreshing...
-                  </span>
+                  <Loader size="small" showProgress={false} showText={false} />
                 )}
                 <Button onClick={() => refetch()}>
                   <RefreshCw size={16} />
@@ -89,7 +74,11 @@ const Groups = () => {
               </div>
             </div>
 
-            {!data?.groups && !isError && <GroupsSkeleton />}
+            {isLoading && !data?.groups && !isError && (
+              <div className="py-8 flex justify-center">
+                <Loader size="small" text="SYNCING RACE DATA..." />
+              </div>
+            )}
 
             {isError && (
               <div className="space-y-4">

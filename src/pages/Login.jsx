@@ -1,4 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { GridLockLogo } from "../components/branding";
+import Loader from "../components/Loader";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { signIn, signUp, signInWithGoogle } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
@@ -84,11 +86,7 @@ function Login() {
   };
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        Loading...
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   return (
@@ -109,11 +107,14 @@ function Login() {
             </p>
           </div>
 
-          <div className="relative z-10 text-sm text-zinc-300">© 2026 Gridlock</div>
+          <div className="relative z-10 text-sm text-zinc-300">
+            © 2026 Gridlock
+          </div>
         </div>
 
         <div className="bg-zinc-900/80 backdrop-blur-xl p-10 md:p-14 flex flex-col justify-center">
-          <div className="mb-10">
+          <div className="mb-10 flex flex-col items-center">
+            <GridLockLogo size={40} mode="dark" className="mb-6 mx-auto" />
             <h2 className="text-3xl font-bold mb-2 tracking-tight">
               {isLogin ? "Welcome Back" : "Create Account"}
             </h2>
@@ -150,12 +151,27 @@ function Login() {
                 d="M24 48c6.5 0 12-2.1 16-5.7l-7.5-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.7-3.6-13.8-8.8l-7.3 5.7C6.6 42.2 14.6 48 24 48z"
               />
             </svg>
-            {isGoogleLoading ? "Loading..." : "Continue with Google"}
+            {isGoogleLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader
+                  as="span"
+                  size="small"
+                  iconMode="light"
+                  showProgress={false}
+                  showText={false}
+                />
+                <span>Connecting</span>
+              </span>
+            ) : (
+              "Continue with Google"
+            )}
           </button>
 
           <div className="relative flex items-center mb-6">
             <div className="grow border-t border-zinc-700"></div>
-            <span className="px-4 text-xs text-zinc-500 uppercase tracking-widest">or</span>
+            <span className="px-4 text-xs text-zinc-500 uppercase tracking-widest">
+              or
+            </span>
             <div className="grow border-t border-zinc-700"></div>
           </div>
 
@@ -211,7 +227,16 @@ function Login() {
               disabled={formLoading}
               className="w-full py-3 bg-red-600 hover:bg-red-700 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg disabled:opacity-60"
             >
-              {formLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+              {formLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader as="span" size="small" showProgress={false} showText={false} />
+                  <span>{isLogin ? "Signing in" : "Creating account"}</span>
+                </span>
+              ) : isLogin ? (
+                "Login"
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
 
@@ -231,5 +256,3 @@ function Login() {
 }
 
 export default Login;
-
-

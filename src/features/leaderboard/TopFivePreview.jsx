@@ -1,43 +1,31 @@
 import React from "react";
-import Skeleton from "../../components/Skeleton";
+import Loader from "../../components/Loader";
 import ErrorMessage from "../../components/ErrorMessage";
 
 // items: [{ rank, name, points }]
-export default function TopFivePreview({ items, error, onViewFull, onRetry }) {
+export default function TopFivePreview({
+  items,
+  loading = false,
+  error,
+  onViewFull,
+  onRetry,
+}) {
   const renderRows = () => {
     if (items?.length) {
-      return items.map((it, idx) => (
-        <div key={it.rank || idx} className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#{it.rank} {it.name}</span>
-          <span className="font-bold text-[#c1a362]">{it.points} pts</span>
+      return items.map((entry, index) => (
+        <div
+          key={entry.rank || index}
+          className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg"
+        >
+          <span className="font-medium">
+            #{entry.rank} {entry.name}
+          </span>
+          <span className="font-bold text-[#c1a362]">{entry.points} pts</span>
         </div>
       ));
     }
 
-    return (
-      <>
-        <div className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#1 SpeedKing</span>
-          <span className="font-bold text-[#c1a362]">210 pts</span>
-        </div>
-        <div className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#2 PodiumPro</span>
-          <span className="font-bold">198 pts</span>
-        </div>
-        <div className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#3 FastF1</span>
-          <span className="font-bold">190 pts</span>
-        </div>
-        <div className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#4 RaceMaster</span>
-          <span className="font-bold">187 pts</span>
-        </div>
-        <div className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-          <span className="font-medium">#5 You</span>
-          <span className="font-bold">185 pts</span>
-        </div>
-      </>
-    );
+    return <p className="text-zinc-400">Leaderboard data is not available yet.</p>;
   };
 
   return (
@@ -45,22 +33,23 @@ export default function TopFivePreview({ items, error, onViewFull, onRetry }) {
       <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
       <div className="flex justify-between items-center mb-8">
         <h3 className="text-2xl font-semibold tracking-wide">Top 5 Leaderboard</h3>
-        <span className="text-sm text-zinc-400 cursor-pointer hover:text-[#c1a362] transition" onClick={onViewFull}>
-          View Full →
+        <span
+          className="text-sm text-zinc-400 cursor-pointer hover:text-[#c1a362] transition"
+          onClick={onViewFull}
+        >
+          View Full
         </span>
       </div>
 
-      {error ? (
-        <ErrorMessage message={error.message || "Failed to load leaderboard."} onRetry={onRetry} />
-      ) : !items ? (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex justify-between py-2 px-3 bg-zinc-800/30 rounded-lg">
-              <Skeleton lines={1} lineClass="h-4 w-40 rounded bg-zinc-700/40" />
-              <Skeleton lines={1} lineClass="h-4 w-16 rounded bg-zinc-700/40" />
-            </div>
-          ))}
+      {loading ? (
+        <div className="py-8 flex justify-center">
+          <Loader size="small" text="SYNCING RACE DATA..." />
         </div>
+      ) : error ? (
+        <ErrorMessage
+          message={error.message || "Failed to load leaderboard."}
+          onRetry={onRetry}
+        />
       ) : (
         <div className="space-y-3">{renderRows()}</div>
       )}

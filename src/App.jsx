@@ -20,6 +20,7 @@ import Rules from "./pages/Rules";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import LandingPage from "./pages/LandingPage";
+import CalendarPage from "./pages/CalendarPage";
 import PublicOnly from "./components/PublicOnly";
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           </PublicOnly>
         }
       />
+      <Route path="/calendar" element={<CalendarPage />} />
 
       {/* Public: Login page */}
       <Route

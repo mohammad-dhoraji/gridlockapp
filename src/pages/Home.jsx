@@ -4,18 +4,14 @@ import PageWrapper from "../components/PageWrapper";
 import Button from "../components/Button";
 import CalendarModal from "../components/CalendarModal";
 
-import useNextRace from "../features/races/useNextRace";
+import { useNextRace } from "../hooks/useNextRace";
 import NextRaceCard from "../features/races/NextRaceCard";
 
-import useTopFive from "../features/leaderboard/useTopFive";
+import { useLeaderboard } from "../hooks/useLeaderboard";
 import TopFivePreview from "../features/leaderboard/TopFivePreview";
 
-import useUserStats from "../features/user/useUserStats";
+import { useProfile } from "../hooks/useProfile";
 import UserSnapshot from "../features/user/UserSnapshot";
-
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
-).replace(/\/+$/, "");
 
 
 
@@ -32,9 +28,20 @@ function Home() {
     };
   }, []);
 
-  const { race, loading: raceLoading, error: raceError, refetch: refetchRace } = useNextRace();
-  const { items: topItems, loading: topLoading, error: topError, refetch: refetchTop } = useTopFive();
-  const { stats, loading: statsLoading, error: statsError, refetch: refetchStats } = useUserStats();
+  const { data: race, isLoading: raceLoading, error: raceError, refetch: refetchRace } =
+    useNextRace();
+  const {
+    data: topItems = [],
+    isLoading: topLoading,
+    error: topError,
+    refetch: refetchTop,
+  } = useLeaderboard({ mode: "preview", pageSize: 5 });
+  const {
+    summary: stats,
+    loading: statsLoading,
+    error: statsError,
+    refetchSummary: refetchStats,
+  } = useProfile({ includePredictions: false });
 
   return (
     <PageWrapper>
@@ -68,7 +75,12 @@ function Home() {
 
         {/* User Snapshot + Leaderboard */}
         <section className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-          <UserSnapshot stats={stats} loading={statsLoading} error={statsError} onRetry={refetchStats} />
+          <UserSnapshot
+            stats={stats}
+            loading={statsLoading}
+            error={statsError}
+            onRetry={refetchStats}
+          />
           <TopFivePreview items={topItems} loading={topLoading} error={topError} onViewFull={() => navigate("/home/leaderboard")} onRetry={refetchTop} />
         </section>
       </div>

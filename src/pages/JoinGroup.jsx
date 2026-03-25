@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ApiMessage from "../components/ApiMessage";
 import Button from "../components/Button";
+import Loader from "../components/Loader";
 import { apiPost } from "../lib/api";
 
 const INVITE_TOKEN_REGEX = /^[A-Za-z0-9]{8,12}$/;
@@ -22,15 +23,6 @@ const mapJoinError = (error) => {
 
 const buildLoginRedirectPath = (inviteToken) =>
   `/login?redirect=${encodeURIComponent(`/join/${inviteToken}`)}`;
-
-function LoadingSpinner() {
-  return (
-    <span
-      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
-      aria-hidden="true"
-    />
-  );
-}
 
 export default function JoinGroup() {
   const queryClient = useQueryClient();
@@ -120,8 +112,8 @@ export default function JoinGroup() {
           <div className="mt-8 space-y-4">
             {loading ? (
               <div className="flex items-center gap-2 text-sm text-zinc-200">
-                <LoadingSpinner />
-                Joining group...
+                <Loader as="span" size="small" showProgress={false} showText={false} />
+                <span>Joining group...</span>
               </div>
             ) : null}
 
@@ -131,13 +123,15 @@ export default function JoinGroup() {
             <Button
               type="button"
               disabled={!canRetry}
+              loading={loading}
+              loadingText="Joining"
               onClick={() => {
                 hasAttemptedRef.current = true;
                 tryJoinGroup();
               }}
               className="w-full"
             >
-              {loading ? "Joining..." : "Retry Join"}
+              Retry Join
             </Button>
           </div>
         </div>

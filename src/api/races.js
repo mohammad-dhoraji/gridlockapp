@@ -1,9 +1,6 @@
 import { apiRequest } from "../lib/api";
 
-export const fetchRaces = async () => {
-  const response = await apiRequest("/v1/races");
-  return response?.data ?? [];
-};
+
 
 export const fetchNextRace = async () => {
   try {

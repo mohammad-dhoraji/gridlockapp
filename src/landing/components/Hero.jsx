@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { LandingButton } from "./LandingButton";
 import RaceLights from "./RaceLights";
 import { hyperspeedPresets } from "../../components/HyperSpeedPresets";
-import Hyperspeed from "../../components/Hyperspeed";
+
+const Hyperspeed = lazy(() => import("../../components/Hyperspeed"));
 
 const Hero = () => {
   const [showLights, setShowLights] = useState(true);
+  const [enableHyperspeed, setEnableHyperspeed] = useState(true);
+  const effectOptions = useMemo(() => hyperspeedPresets.two, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,10 +19,33 @@ const Hero = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateHyperspeedEnabled = () => {
+      const saveData = Boolean(navigator.connection?.saveData);
+      const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
+      const lowCpu = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4;
+      setEnableHyperspeed(!(mediaQuery.matches || saveData || lowMemory || lowCpu));
+    };
+
+    updateHyperspeedEnabled();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateHyperspeedEnabled);
+      return () => mediaQuery.removeEventListener("change", updateHyperspeedEnabled);
+    }
+
+    mediaQuery.addListener(updateHyperspeedEnabled);
+    return () => mediaQuery.removeListener(updateHyperspeedEnabled);
+  }, []);
+
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden px-6 pb-12 pt-24">
       <div className="absolute inset-0 z-0">
-        <Hyperspeed effectOptions={hyperspeedPresets.two} />
+        {enableHyperspeed ? (
+          <Suspense fallback={null}>
+            <Hyperspeed effectOptions={effectOptions} />
+          </Suspense>
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-background/30 to-background/70" />
       </div>
 

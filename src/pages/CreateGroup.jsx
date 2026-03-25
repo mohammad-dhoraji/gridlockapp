@@ -28,15 +28,6 @@ const mapCreateGroupError = (error) => {
   return "Unable to create group right now. Please try again.";
 };
 
-function LoadingSpinner() {
-  return (
-    <span
-      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
-      aria-hidden="true"
-    />
-  );
-}
-
 export default function CreateGroup() {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
@@ -125,15 +116,14 @@ export default function CreateGroup() {
                 {MIN_GROUP_NAME_LENGTH}-{MAX_GROUP_NAME_LENGTH} characters.
               </p>
 
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <LoadingSpinner />
-                    Creating...
-                  </span>
-                ) : (
-                  "Create Group"
-                )}
+              <Button
+                type="submit"
+                disabled={loading}
+                loading={loading}
+                loadingText="Creating"
+                className="w-full"
+              >
+                Create Group
               </Button>
             </form>
 

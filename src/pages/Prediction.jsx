@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Button from "../components/Button";
 import DriverSelect from "../components/DriverSelect";
 import Modal from "../components/Modal";
-
-import { apiPost, apiRequest } from "../lib/api";
+import Loader from "../components/Loader";
+import { usePredictions } from "../hooks/usePredictions";
 
 const EMPTY_PREDICTION = {
   p1: "",
@@ -56,14 +56,29 @@ const mapApiError = (error) => {
   return "Something went wrong. Please try again.";
 };
 
+const toPredictionDraft = (payload) => ({
+  p1: payload?.p1 || "",
+  p2: payload?.p2 || "",
+  p3: payload?.p3 || "",
+  dotd: payload?.dotd || "",
+});
+
 const Prediction = () => {
-  const [race, setRace] = useState(null);
-  const [raceStatus, setRaceStatus] = useState(null);
-  const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [prediction, setPrediction] = useState(EMPTY_PREDICTION);
-  const [hasExistingPrediction, setHasExistingPrediction] = useState(false);
+  const {
+    race,
+    raceStatus,
+    drivers,
+    isLockedByTime,
+    savedPrediction,
+    hasExistingPrediction,
+    isLoading,
+    error,
+    refetch,
+    submitPrediction,
+    submitting,
+  } = usePredictions();
+
+  const [draftByRaceId, setDraftByRaceId] = useState({});
 
   const [modal, setModal] = useState(CLOSED_MODAL);
 
@@ -75,83 +90,17 @@ const Prediction = () => {
     setModal((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
-  const hydratePrediction = useCallback((payload) => {
-    if (!payload) return;
+  const prediction = useMemo(() => {
+    if (!race?.id) return EMPTY_PREDICTION;
 
-    setPrediction({
-      p1: payload.p1 || "",
-      p2: payload.p2 || "",
-      p3: payload.p3 || "",
-      dotd: payload.dotd || "",
-    });
-  }, []);
+    const draft = draftByRaceId[race.id];
+    if (draft) return draft;
 
-  const loadPageData = useCallback(async () => {
-    setLoading(true);
+    return savedPrediction
+      ? toPredictionDraft(savedPrediction)
+      : EMPTY_PREDICTION;
+  }, [draftByRaceId, race?.id, savedPrediction]);
 
-    try {
-      const [nextRace, driverPayload] = await Promise.all([
-        apiRequest("/api/races/current"),
-        apiRequest("/api/predictions/drivers"),
-      ]);
-
-      setRace(nextRace || null);
-      setDrivers(
-        (driverPayload?.drivers || [])
-          .map((entry) => entry.name)
-          .filter(Boolean),
-      );
-
-      if (!nextRace?.id) {
-        setRaceStatus(null);
-        setPrediction(EMPTY_PREDICTION);
-        setHasExistingPrediction(false);
-        return;
-      }
-
-      const [statusPayload, savedPrediction] = await Promise.all([
-        apiRequest(`/v1/races/${nextRace.id}/status`).catch(() => null),
-        apiRequest(`/api/predictions/${nextRace.id}`).catch((error) => {
-          if (error?.status === 404) return null;
-          throw error;
-        }),
-      ]);
-
-      setRaceStatus(statusPayload);
-      if (savedPrediction) {
-        hydratePrediction(savedPrediction);
-        setHasExistingPrediction(true);
-      } else {
-        setPrediction(EMPTY_PREDICTION);
-        setHasExistingPrediction(false);
-      }
-    } catch (error) {
-      if (error?.status === 404) {
-        setRace(null);
-        setRaceStatus(null);
-        setPrediction(EMPTY_PREDICTION);
-        setHasExistingPrediction(false);
-      } else {
-        openModal(
-          "error",
-          "Failed to Load Prediction Data",
-          mapApiError(error),
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [hydratePrediction, openModal]);
-
-  useEffect(() => {
-    loadPageData();
-  }, [loadPageData]);
-
-  const lockAt =
-    raceStatus?.lock_at || race?.lock_at || race?.race_at || race?.race_date;
-  const isLockedByTime = lockAt
-    ? Date.now() >= new Date(lockAt).getTime()
-    : false;
   const isLocked =
     Boolean(raceStatus?.is_locked) ||
     isLockedByTime ||
@@ -179,12 +128,25 @@ const Prediction = () => {
     [drivers, prediction],
   );
 
-  const handleChange = useCallback((position, value) => {
-    setPrediction((prev) => ({
-      ...prev,
-      [position]: value,
-    }));
-  }, []);
+  const handleChange = (position, value) => {
+    if (!race?.id) return;
+
+    setDraftByRaceId((previousDrafts) => {
+      const previousDraft =
+        previousDrafts[race.id] ||
+        (savedPrediction
+          ? toPredictionDraft(savedPrediction)
+          : EMPTY_PREDICTION);
+
+      return {
+        ...previousDrafts,
+        [race.id]: {
+          ...previousDraft,
+          [position]: value,
+        },
+      };
+    });
+  };
 
   const validatePrediction = useMemo(() => {
     const { p1, p2, p3, dotd } = prediction;
@@ -207,10 +169,8 @@ const Prediction = () => {
       return;
     }
 
-    setSubmitting(true);
-
     try {
-      const saved = await apiPost("/api/predictions", {
+      const saved = await submitPrediction({
         raceId: race.id,
         p1: prediction.p1,
         p2: prediction.p2,
@@ -218,8 +178,10 @@ const Prediction = () => {
         dotd: prediction.dotd,
       });
 
-      hydratePrediction(saved);
-      setHasExistingPrediction(true);
+      setDraftByRaceId((previousDrafts) => ({
+        ...previousDrafts,
+        [race.id]: toPredictionDraft(saved),
+      }));
 
       openModal(
         "success",
@@ -228,17 +190,20 @@ const Prediction = () => {
       );
     } catch (error) {
       openModal("error", "Prediction Save Failed", mapApiError(error));
-    } finally {
-      setSubmitting(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
+    return <Loader fullScreen text="SYNCING RACE DATA..." />;
+  }
+
+  if (error) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
-        <p className="text-zinc-400 text-sm tracking-widest uppercase animate-pulse">
-          Loading prediction data...
+      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-zinc-300 text-sm">
+          {mapApiError(error)}
         </p>
+        <Button onClick={() => refetch()}>Retry</Button>
       </div>
     );
   }
@@ -346,13 +311,10 @@ const Prediction = () => {
                   onClick={handleSubmit}
                   disabled={submitting}
                   loading={submitting}
+                  loadingText={hasExistingPrediction ? "Updating" : "Saving"}
                   className="w-full sm:w-auto"
                 >
-                  {submitting
-                    ? "Saving..."
-                    : hasExistingPrediction
-                      ? "Update Prediction"
-                      : "Submit Prediction"}
+                  {hasExistingPrediction ? "Update Prediction" : "Submit Prediction"}
                 </Button>
               ) : (
                 <div className="text-red-400 font-medium text-center">

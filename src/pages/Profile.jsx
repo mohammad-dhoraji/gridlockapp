@@ -6,9 +6,10 @@ import PerformanceSnapshot from "../components/PerformanceSnapshot";
 import RecentRaces from "../components/RecentRaces";
 import Achievements from "../components/Achievements";
 import { supabase } from "../lib/supabaseClient";
+import Loader from "../components/Loader";
 
 function Profile() {
-  const { profile, predictions, stats, loading, error } = useProfile();
+  const { summary, predictions, loading, errorMessage } = useProfile();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -16,26 +17,16 @@ function Profile() {
     navigate("/login");
   };
   if (loading) {
-    return (
-      <PageWrapper>
-        <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-10">
-          <div className="animate-pulse space-y-6 max-w-5xl mx-auto">
-            <div className="h-24 bg-zinc-900 rounded-2xl" />
-            <div className="h-32 bg-zinc-900 rounded-2xl" />
-            <div className="h-40 bg-zinc-900 rounded-2xl" />
-          </div>
-        </div>
-      </PageWrapper>
-    );
+    return <Loader fullScreen text="SYNCING RACE DATA..." />;
   }
 
-  if (error) {
+  if (errorMessage) {
     return (
       <PageWrapper>
         <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-10 w-full">
           <div className="max-w-5xl mx-auto">
             <div className="bg-red-900/20 border border-red-700 rounded-xl p-6">
-              <p className="text-red-400">{error}</p>
+              <p className="text-red-400">{errorMessage}</p>
             </div>
           </div>
         </div>
@@ -44,10 +35,10 @@ function Profile() {
   }
 
   return (
-    <PageWrapper>
+      <PageWrapper>
       <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-10 w-full space-y-10">
-        <ProfileHeader profile={profile} stats={stats} />
-        <PerformanceSnapshot stats={stats} />
+        <ProfileHeader summary={summary} />
+        <PerformanceSnapshot summary={summary} />
         <RecentRaces predictions={predictions} />
         <Achievements />
         <section className="max-w-5xl mx-auto">

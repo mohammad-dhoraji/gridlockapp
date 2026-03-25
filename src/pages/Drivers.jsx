@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { fetchDriverStandings } from "../services/standingsService";
 import PageWrapper from "../components/PageWrapper";
-import { useLoading } from "../context/LoadingContext";
+import Loader from "../components/Loader";
 
 function Drivers() {
   const [driversData, setDriversData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { setLoading } = useLoading();
 
   useEffect(() => {
     async function loadStandings() {
@@ -14,7 +14,7 @@ function Drivers() {
         setLoading(true);
         const data = await fetchDriverStandings();
         setDriversData(data);
-      } catch (err) {
+      } catch {
         setError("Failed to load standings");
       } finally {
         setLoading(false);
@@ -30,6 +30,10 @@ function Drivers() {
         {error}
       </div>
     );
+  }
+
+  if (loading) {
+    return <Loader fullScreen text="SYNCING RACE DATA..." />;
   }
 
   return (

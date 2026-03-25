@@ -1,27 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
-import { apiRequest } from "../../lib/api";
+import { useNextRace as useNextRaceQuery } from "../../hooks/useNextRace";
 
 export default function useNextRace() {
-  const [race, setRace] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const query = useNextRaceQuery();
 
-  const fetchRace = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await apiRequest("/api/races/current");
-      setRace(data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRace();
-  }, [fetchRace]);
-
-  return { race, loading, error, refetch: fetchRace };
+  return {
+    race: query.data || null,
+    loading: query.isPending,
+    error: query.error || null,
+    refetch: query.refetch,
+  };
 }
