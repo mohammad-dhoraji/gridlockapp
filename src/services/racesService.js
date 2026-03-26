@@ -3,14 +3,18 @@ import { apiRequest } from "../lib/api";
 const normalizeRace = (rawRace) => ({
   id: rawRace.id,
   name: rawRace.name,
-  circuit: rawRace.circuit,
-  date: rawRace.date || rawRace.race_date,
-  status: rawRace.status,
+  circuit: rawRace.circuit_name,
+  date: rawRace.race_at,
+  status: rawRace.race_state,
 });
 
 export async function fetchRaces() {
   const response = await apiRequest("/v1/races");
-  return Array.isArray(response?.data) ? response.data.map(normalizeRace) : [];
+  if (!Array.isArray(response?.data)) {
+    throw new Error("Invalid races response");
+  }
+
+  return response.data.map(normalizeRace);
 }
 
 export async function fetchNextRace() {
@@ -23,4 +27,3 @@ export async function fetchNextRace() {
     throw error;
   }
 }
-

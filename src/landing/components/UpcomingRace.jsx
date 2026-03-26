@@ -181,7 +181,7 @@ const UpcomingRace = () => {
           </div>
 
           <div className="flex justify-center py-4">
-            <div className="relative mx-auto w-full max-w-[420px]" aria-hidden="true">
+            <div className="relative mx-auto w-full max-w-105" aria-hidden="true">
               <svg viewBox={trackViewBox} className="h-auto w-full overflow-visible text-foreground/70">
                 <path d={trackPath} fill="none" stroke="currentColor" strokeWidth="2" className="opacity-25" />
                 <path
