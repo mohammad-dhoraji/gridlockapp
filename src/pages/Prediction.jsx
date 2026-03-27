@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import PageWrapper from "../components/PageWrapper";
 import Button from "../components/Button";
 import DriverSelect from "../components/DriverSelect";
 import Modal from "../components/Modal";
@@ -114,7 +115,6 @@ const Prediction = () => {
         return drivers;
       }
 
-      // Prevent duplicate podium drivers
       const podiumDrivers = [prediction.p1, prediction.p2, prediction.p3];
 
       return drivers.filter((driverName) => {
@@ -199,8 +199,8 @@ const Prediction = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="text-zinc-300 text-sm">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-6 text-center py-28">
+        <p className="text-muted-foreground text-sm">
           {mapApiError(error)}
         </p>
         <Button onClick={() => refetch()}>Retry</Button>
@@ -210,23 +210,18 @@ const Prediction = () => {
 
   if (!race) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black flex items-center justify-center">
-        <p className="text-zinc-400 text-sm">No upcoming race is available.</p>
+      <div className="min-h-screen bg-background flex items-center justify-center py-28 px-6">
+        <p className="text-muted-foreground text-sm">No upcoming race is available.</p>
       </div>
     );
   }
 
   const raceDateLabel = formatRaceDate(race);
-  const currentStatus = String(raceStatus?.race_state || race.race_state || "unknown");
 
-  const statusColor = !isLocked
-    ? "bg-green-600/20 text-green-400 border border-green-500/30"
-    : currentStatus === "locked"
-      ? "bg-yellow-600/20 text-yellow-400 border border-yellow-500/30"
-      : "bg-red-600/20 text-red-400 border border-red-500/30";
+  // Neutral status badge - no dynamic colors needed
 
   return (
-    <>
+    <PageWrapper>
       <Modal
         isOpen={modal.isOpen}
         onClose={closeModal}
@@ -234,34 +229,27 @@ const Prediction = () => {
         title={modal.title}
         message={modal.message}
       />
-     
 
-      <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black text-white px-6 py-12 w-full">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-14">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+      <div className="min-h-screen w-full px-6 text-foreground overflow-x-hidden bg-linear-to-b from-neutral-800 via-neutral-950 to-black py-10">
+        <section className="max-w-4xl mx-auto py-10 border-b border-border">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 sm:gap-6 mb-8">
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-f1 font-black uppercase bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                 {race.name}
               </h1>
-
-              <span
-                className={`px-4 py-1.5 text-xs tracking-widest rounded-full font-bold uppercase ${statusColor}`}
-              >
-                {isLocked ? "locked" : "upcoming"}
-              </span>
+              <p className="font-mono text-sm uppercase tracking-wider text-muted-foreground mt-2">
+                {raceDateLabel}
+              </p>
             </div>
-
-            <p className="text-zinc-500 text-sm uppercase tracking-wide">
-              {raceDateLabel}
-            </p>
-
-            <div className="mt-6 h-0.5 w-full bg-linear-to-r from-[#c1a362] via-zinc-700 to-transparent rounded-full" />
+            <span className="px-4 py-1.5 text-xs tracking-widest rounded-full font-bold uppercase bg-background/50 border border-border/50 text-muted-foreground">
+              {isLocked ? "Predictions Locked" : "Predictions Open"}
+            </span>
           </div>
+        </section>
 
-          <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-10 shadow-2xl shadow-black/40">
-            <div className="absolute -top-0.5 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
-
-            <h2 className="text-2xl font-semibold mb-10 tracking-wide">
+        <section className="max-w-4xl mx-auto py-10 border-t border-border">
+          <div className="bg-background/80 backdrop-blur-xl border border-border rounded-3xl p-4 sm:p-10 shadow-xl">
+            <h2 className="font-f1 font-black text-2xl sm:text-3xl uppercase tracking-[0.15em] mb-6 sm:mb-8">
               Select Your Podium
             </h2>
 
@@ -272,7 +260,7 @@ const Prediction = () => {
                 onChange={(val) => handleChange("p1", val)}
                 drivers={getAvailableDrivers("p1")}
                 disabled={isLocked || submitting}
-                highlight="ring-yellow-500/40"
+                highlight="ring-chart-4/40"
               />
 
               <DriverSelect
@@ -281,7 +269,7 @@ const Prediction = () => {
                 onChange={(val) => handleChange("p2", val)}
                 drivers={getAvailableDrivers("p2")}
                 disabled={isLocked || submitting}
-                highlight="ring-zinc-400/30"
+                highlight="ring-primary/30"
               />
 
               <DriverSelect
@@ -290,7 +278,7 @@ const Prediction = () => {
                 onChange={(val) => handleChange("p3", val)}
                 drivers={getAvailableDrivers("p3")}
                 disabled={isLocked || submitting}
-                highlight="ring-amber-700/40"
+                highlight="ring-accent/40"
               />
             </div>
 
@@ -301,32 +289,31 @@ const Prediction = () => {
                 onChange={(val) => handleChange("dotd", val)}
                 drivers={getAvailableDrivers("dotd")}
                 disabled={isLocked || submitting}
-                highlight="ring-[#c1a362]/50"
+                highlight="ring-chart-5/50"
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-8">
               {!isLocked ? (
                 <Button
                   onClick={handleSubmit}
                   disabled={submitting}
                   loading={submitting}
                   loadingText={hasExistingPrediction ? "Updating" : "Saving"}
-                  className="w-full sm:w-auto"
+                  className="font-f1 text-xs font-bold uppercase tracking-[0.15em] !bg-primary !text-primary-foreground hover:!bg-primary/85 w-full sm:w-auto"
                 >
                   {hasExistingPrediction ? "Update Prediction" : "Submit Prediction"}
                 </Button>
               ) : (
-                <div className="text-red-400 font-medium text-center">
-                  Predictions locked
+                <div className="text-destructive font-bold text-center uppercase tracking-wide">
+                  Predictions locked at lights out
                 </div>
               )}
-             
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </>
+    </PageWrapper>
   );
 };
 

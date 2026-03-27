@@ -62,7 +62,7 @@ export default function Privacy() {
           <Section title="7. Contact">
             <p>For any questions or concerns, contact:</p>
             <p className="mt-2 font-mono text-xs tracking-wider">
-              contact@gridlock.site
+              contact@gridlockapp.site
             </p>
           </Section>
 
