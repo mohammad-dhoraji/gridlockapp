@@ -26,7 +26,7 @@ const GroupsSkeleton = ({ className = '' }) => (
         <div className="h-12 w-full md:w-48 bg-zinc-800/50 rounded-xl" />
         <div className="flex flex-col sm:flex-row w-full gap-3 md:w-auto">
           <div className="h-12 flex-1 bg-zinc-800/50 rounded-xl" />
-          <div className="h-12 w-32 bg-gradient-to-r from-primary/20 to-primary/10 rounded-xl" />
+          <div className="h-12 w-32 bg-linear-to-r from-primary/20 to-primary/10 rounded-xl" />
         </div>
       </div>
     </div>

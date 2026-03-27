@@ -72,18 +72,18 @@ const TopPodium = ({ topThree }) => {
         }}
         className={`relative flex flex-col items-center shrink-0 w-35 md:w-42.5 bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl overflow-hidden ${
           isP1 
-            ? "h-65 md:h-[300px] ring-2 ring-primary/50 scale-105 z-10" 
-            : "h-55 md:h-[250px] z-0 opacity-95"
+            ? "h-65 md:h-75 ring-2 ring-primary/50 scale-105 z-10" 
+            : "h-55 md:h-62.5 z-0 opacity-95"
         }`}
       >
         {isP1 && (
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-primary/5 to-transparent opacity-50 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-b from-primary/20 via-primary/5 to-transparent opacity-50 pointer-events-none" />
         )}
         
         <div className="relative flex-1 flex flex-col items-center justify-start w-full pt-6 md:pt-8 px-3 md:px-4 z-10">
           <div className="text-3xl md:text-5xl mb-3 md:mb-5 drop-shadow-md">{rankLabel}</div>
           
-          <div className={`shrink-0 rounded-full ring-2 flex items-center justify-center bg-gradient-to-br from-zinc-700 to-zinc-600 text-foreground font-bold uppercase overflow-hidden mb-3 md:mb-4 shadow-inner ${
+          <div className={`shrink-0 rounded-full ring-2 flex items-center justify-center bg-linear-to-br from-zinc-700 to-zinc-600 text-foreground font-bold uppercase overflow-hidden mb-3 md:mb-4 shadow-inner ${
             isP1 ? "w-16 h-16 md:w-20 md:h-20 ring-primary/50 text-xl" : "w-12 h-12 md:w-16 md:h-16 ring-border/50 text-md"
           }`}>
             {user.avatar_url ? (

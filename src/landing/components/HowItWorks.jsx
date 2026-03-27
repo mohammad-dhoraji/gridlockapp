@@ -30,7 +30,7 @@ const HowItWorks = () => {
         <div className="relative">
           {/* Vertical track line */}
           <motion.div
-            className="absolute left-[15px] top-0 bottom-0 w-px bg-border"
+            className="absolute left-3.75 top-0 bottom-0 w-px bg-border"
             initial={{ scaleY: 0, transformOrigin: "top" }}
             whileInView={{ scaleY: 1 }}
             viewport={{ once: true, margin: "-80px" }}
@@ -48,17 +48,17 @@ const HowItWorks = () => {
                 className="flex items-start gap-6 py-5"
               >
                 {/* Node dot */}
-                <div className="relative flex-shrink-0 w-8 flex justify-center pt-1">
-                  <div className="w-[7px] h-[7px] rounded-full bg-primary" />
+                <div className="relative shrink-0 w-8 flex justify-center pt-1">
+                  <div className="w-1.75 h-1.75 rounded-full bg-primary" />
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col md:flex-row md:items-baseline md:gap-6">
-                    <div className="flex items-baseline gap-3 md:w-72 flex-shrink-0">
+                    <div className="flex items-baseline gap-3 md:w-72 shrink-0">
                       <span className="font-f1 text-[10px] text-muted-foreground/30">
                         {step.num}
                       </span>
-                      <h3 className="font-f1 text-xs font-bold uppercase tracking-[0.1em] text-foreground">
+                      <h3 className="font-f1 text-xs font-bold uppercase tracking-widest text-foreground">
                         {step.label}
                       </h3>
                     </div>

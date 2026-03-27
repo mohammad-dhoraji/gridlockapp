@@ -300,7 +300,7 @@ const Prediction = () => {
                   disabled={submitting}
                   loading={submitting}
                   loadingText={hasExistingPrediction ? "Updating" : "Saving"}
-                  className="font-f1 text-xs font-bold uppercase tracking-[0.15em] !bg-primary !text-primary-foreground hover:!bg-primary/85 w-full sm:w-auto"
+                  className="font-f1 text-xs font-bold uppercase tracking-[0.15em] bg-primary! text-primary-foreground! hover:bg-primary/85! w-full sm:w-auto"
                 >
                   {hasExistingPrediction ? "Update Prediction" : "Submit Prediction"}
                 </Button>

@@ -25,8 +25,9 @@ const Groups = () => {
   const [activeShare, setActiveShare] = useState(null);
 
   const navigate = useNavigate();
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, isError, error, refetch } =
     useMyGroups();
+
 
   useEffect(() => {
     if (!import.meta.env.DEV) return undefined;
@@ -55,22 +56,28 @@ const Groups = () => {
 
   return (
     <PageWrapper>
-      <div className="min-h-screen w-full overflow-x-hidden bg-linear-to-b from-neutral-800 via-neutral-950 to-black px-6 py-10 text-white">
-          <div className="max-w-5xl mx-auto space-y-10 w-full">
+        <div className="py-28 px-6  bg-linear-to-b from-neutral-800 via-neutral-950 to-black">
+          <div className="max-w-4xl mx-auto space-y-16 ">
+
           {/* HEADER */}
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-3 bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+            <h1 className="font-f1 text-4xl md:text-6xl font-black tracking-tight uppercase leading-none mb-6 bg-linear-to-r from-white to-zinc-400 bg-clip-text text-transparent">
               Your Groups
             </h1>
-            <p className="text-zinc-400">Compete privately with friends.</p>
+            <p className="text-lg text-muted-foreground">Compete privately with friends</p>
+
           </div>
 
           {/* GROUPS CARD */}
-          <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-8 shadow-2xl shadow-black/40">
-            <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" />
+          <div className="bg-background/80 backdrop-blur-sm border border-border/80 rounded-2xl p-8 animate-gridlockFadeIn">
+
 
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Groups</h2>
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-2">Your Groups</p>
+                <h2 className="font-f1 text-2xl md:text-3xl font-bold uppercase tracking-[0.15em] text-foreground mb-8">Groups List</h2>
+              </div>
+
 
               <div className="flex items-center gap-3">
                 <Button onClick={() => refetch()}>
@@ -90,23 +97,26 @@ const Groups = () => {
             )}
 
             {data?.groups && !isError && !hasGroups && (
-              <p className="text-zinc-500">No groups yet. Create your first group on Gridlock.</p>
+              <p className="text-muted-foreground py-12 text-center">No groups yet. Create your first group.</p>
             )}
+
 
             {data?.groups && !isError && hasGroups && (
               <div className="space-y-4">
                 {groups.map((group) => (
                   <div
                     key={group.id}
-                    className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5"
+                    className="border border-border/50 hover:border-primary/50 bg-secondary/30 backdrop-blur-sm rounded-xl p-6 transition-all duration-200 animate-gridlockFadeIn"
+
                   >
+
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold">{group.name}</h3>
-                        <p className="text-sm text-zinc-400">
-                          Role: {group.role ?? "—"} | Members:{" "}
-                          {group.memberCount ?? 0}
+                        <h3 className="font-f1 text-lg font-bold text-foreground mb-1">{group.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Role: <span className="font-semibold">{group.role ?? "—"}</span> • Members: {group.memberCount ?? 0}
                         </p>
+
                       </div>
 
                       <Button onClick={() => navigate(`/home/groups/${group.id}`)}>
@@ -141,10 +151,14 @@ const Groups = () => {
           </div>
 
           {/* ACTIONS CARD */}
-          <div className="relative bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-6">Create or Join</h2>
+          <div className="bg-background/80 backdrop-blur-sm border border-border/80 rounded-2xl p-8 animate-gridlockFadeIn">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-2">Quick Actions</p>
+              <h2 className="font-f1 text-2xl md:text-2xl font-bold uppercase tracking-[0.15em] text-foreground mb-8">Create or Join Group</h2>
+            </div>
 
               <div className="flex flex-col md:flex-row gap-6">
+
               <Button onClick={() => navigate("/home/groups/create")}>
                 <span className="flex items-center gap-2">
                   <Plus size={16} />
@@ -155,11 +169,12 @@ const Groups = () => {
               <div className="flex flex-col sm:flex-row w-full gap-3 md:w-auto min-w-0">
                 <input
                   type="text"
-                  placeholder="Invite token"
+                  placeholder="Enter invite token"
                   value={joinToken}
                   onChange={(e) => setJoinToken(e.target.value)}
-                  className="min-w-0 flex-1 bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#c1a362]"
+                  className="min-w-0 flex-1 bg-secondary/50 border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground transition-colors"
                 />
+
                 <Button
                   onClick={handleJoinGroup}
                   disabled={!normalizedJoinToken}
