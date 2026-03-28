@@ -3,6 +3,7 @@ import Button from "../../components/Button";
 import Countdown from "../../components/Countdown";
 import NextRaceSkeleton from "../../components/ui/NextRaceSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
+import { tracks } from "../../data/trackPaths.js";
 
 const getFlagSrc = (countryCode) => {
   if (!countryCode) return null;
@@ -11,6 +12,7 @@ const getFlagSrc = (countryCode) => {
     import.meta.url,
   ).href;
 };
+
 export default function NextRaceCard({
   race,
   loading = false,
@@ -18,23 +20,23 @@ export default function NextRaceCard({
   onEdit,
   onRetry,
 }) {
-  return (
-    <section className="max-w-5xl mx-auto mb-14">
-      <div className="relative bg-zinc-900/70 backdrop-blur-xl border border-zinc-800 rounded-b-3xl p-10 shadow-2xl shadow-black/40">
-        {/* <div className="absolute -top-1 left-0 w-full h-0.75 bg-linear-to-r from-[#c1a362] via-red-500/60 to-[#c1a362] rounded-t-3xl" /> */}
+  const round = Number(race?.round) || 0;
+  const trackData = tracks[round] || null;
 
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-semibold tracking-wide">Next Race</h2>
-          {race?.status === "upcoming" ? (
-            <span className="px-4 py-1.5 text-xs tracking-widest rounded-full font-bold bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
-              Predictions Open
-            </span>
-          ) : race?.status === "locked" ? (
-            <span className="px-4 py-1.5 text-xs tracking-widest rounded-full font-bold bg-red-600/20 text-red-400 border border-red-500/30">
-              🔒 Predictions Locked
-            </span>
-          ) : null}
-        </div>
+  const raceTitle = race?.name || "Next Race";
+
+  const raceNameLines = raceTitle
+    .split("Grand Prix")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (raceNameLines.length === 1 && raceTitle.includes("Grand Prix")) {
+    raceNameLines.push("Grand Prix");
+  }
+
+  return (
+    <section className="max-w-5xl mx-auto mb-10">
+      <div className="relative bg-linear-to-br bg-[linear-gradient(135deg,#3f3a33_0%,#655e54_50%,#8a8175_100%)] backdrop-blur-xl border border-zinc-700/50 rounded-2xl px-6 py-6 md:px-8 md:py-7 shadow-xl shadow-black/40">
 
         {loading ? (
           <NextRaceSkeleton />
@@ -44,41 +46,104 @@ export default function NextRaceCard({
             onRetry={onRetry}
           />
         ) : !race ? (
-          <div className="text-center text-zinc-400 py-8">
+          <div className="text-center text-zinc-400 py-6">
             No upcoming race available right now.
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <img
-              src={getFlagSrc(race?.country_code)}
-              alt={race?.country || "Flag"}
-              className="w-24 h-24 object-contain"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] items-center gap-y-6 md:gap-x-12">
 
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-bold mb-3">{race.name}</h3>
-              <p className="text-zinc-400 mb-2">
-                {new Date(race.race_date).toLocaleString("en-IN", {
-                  timeZone: "Asia/Kolkata",
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
-              </p>
-              <p className="text-[#c1a362] font-semibold">
-                Closes in: <Countdown target={race.race_date} />
-              </p>
+            {/* Track SVG */}
+            <div className="flex items-center justify-center">
+              {trackData && (
+                <div className="w-full max-w-152.5">
+                  <svg
+                    viewBox={expandViewBox(trackData.viewBox, 10)} 
+                    className="w-full h-auto"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    <path
+                      d={trackData.path}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
 
-            {race?.status === "upcoming" && (
+            {/* Info */}
+            <div className="flex flex-col justify-between ">
+
+              {/* Title */}
               <div>
-                <Button className="px-5 py-2" onClick={onEdit}>
-                  Make Prediction
-                </Button>
+                <div className="flex items-center mb-4">
+                  {getFlagSrc(race.country_code) && (
+                    <img
+                      src={getFlagSrc(race.country_code)}
+                      alt=""
+                      className="w-10 h-10 mr-5 object-contain"
+                    />
+                  )}
+
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-black uppercase text-white leading-tight">
+                      {raceNameLines[0] || "NEXT"}
+                    </h1>
+                    <h2 className="text-lg md:text-xl font-semibold uppercase text-zinc-400">
+                      {raceNameLines[1] || "RACE"}
+                    </h2>
+                  </div>
+                </div>
+
+                <p className="text-sm md:text-base text-zinc-400 mb-6">
+                  {race.circuit_name || "—"}
+                </p>
+
+                {/* Countdown */}
+                <div className="mb-6">
+                  <p className="text-xs uppercase tracking-widest text-white mb-2">
+                    Race starts in
+                  </p>
+                  <div className="text-2xl md:text-5xl font-f1 font-bold text-red-400/90">
+                    <Countdown target={race.race_date} />
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* Button */}
+              {race?.status === "upcoming" && (
+                <div className="md:text-right">
+                  <Button
+                    className="px-5 py-2 text-sm"
+                    onClick={onEdit}
+                  >
+                    Make Prediction
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
     </section>
   );
+}
+
+/**
+ * Expands SVG viewBox to prevent clipping
+ */
+function expandViewBox(viewBox, padding = 10) {
+  if (!viewBox) return "0 0 100 100";
+
+  const [x, y, w, h] = viewBox.split(" ").map(Number);
+
+  return [
+    x - padding,
+    y - padding,
+    w + padding * 3,
+    h + padding * 3,
+  ].join(" ");
 }
