@@ -14,7 +14,7 @@ function UnrankedPool({ itemIds, itemsById, title, categoryPlural }) {
     () => itemIds.map(id => itemsById[id]).filter(Boolean),
     [itemIds, itemsById]
   );
-  const unrankedCount = itemIds.length;
+  const unrankedCount = items.length;
   const isEmpty = unrankedCount === 0;
 
   return (
@@ -24,7 +24,7 @@ function UnrankedPool({ itemIds, itemsById, title, categoryPlural }) {
           {title}
         </h3>
         <span className="text-on-surface/20 font-mono text-[10px]">
-          {unrankedCount} {categoryPlural.toUpperCase()} REMAINING
+          {unrankedCount} {(categoryPlural?.toUpperCase?.()) || "ITEMS"} REMAINING
         </span>
       </div>
 
@@ -41,7 +41,7 @@ function UnrankedPool({ itemIds, itemsById, title, categoryPlural }) {
           className="flex flex-wrap gap-1.5 sm:gap-2 pb-1 sm:pb-2 min-h-[70px] sm:min-h-24"
         >
           <SortableContext
-            items={itemIds}
+            items={items.map(item => item.id)}
             strategy={rectSortingStrategy}
           >
             {items.map(item => (

@@ -164,10 +164,14 @@ const GroupDetail = () => {
       navigate("/home/groups", { replace: true });
     }
   }, [captureMode, isError, error, navigate]);
+  
+  // Suppress loading skeleton in capture mode when data is already available
+  const showLoading = isLoading && !(captureMode && displayGroup);
+  
   return (
     <Skeleton
       name="group-detail-page"
-      loading={isLoading}
+      loading={showLoading}
       animate="pulse"
       transition={300}
     >

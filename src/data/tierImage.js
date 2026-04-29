@@ -1,4 +1,16 @@
 export function createTierItemImage(title, accent, shadow = "#111111") {
+  // XML escape helper for SVG content
+  const escapeXml = (str) => {
+    if (!str) return "";
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  };
+
+  const escapedTitle = escapeXml(title);
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
       <defs>
@@ -20,7 +32,7 @@ export function createTierItemImage(title, accent, shadow = "#111111") {
         font-weight="700"
         letter-spacing="1.5"
       >
-        ${title}
+        ${escapedTitle}
       </text>
     </svg>
   `;

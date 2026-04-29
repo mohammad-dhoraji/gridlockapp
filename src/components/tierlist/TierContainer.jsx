@@ -15,7 +15,7 @@ function TierContainer({ tier, itemIds, itemsById, label, color }) {
     () => itemIds.map(id => itemsById[id]).filter(Boolean),
     [itemIds, itemsById]
   );
-  const isEmpty = itemIds.length === 0;
+  const isEmpty = items.length === 0;
 
   return (
     <div className="flex items-stretch group border border-surface-dim/20 rounded-lg">

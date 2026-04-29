@@ -22,6 +22,11 @@ export default function BottomNav({
           const isActive = activeCategory === item.key;
           const Icon = navIcons[item.key];
 
+          // Guard against missing icon
+          if (!Icon) {
+            return null;
+          }
+
           return (
             <button
               type="button"

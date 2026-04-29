@@ -399,7 +399,7 @@ const Prediction = () => {
       >
         <PredictionFormContent
           drivers={displayDrivers}
-          getAvailableDrivers={getAvailableDrivers}
+          getAvailableDrivers={!race ? fixtureGetAvailableDrivers : getAvailableDrivers}
           handleChange={handleChange}
           handleSubmit={handleSubmit}
           hasExistingPrediction={displayHasExistingPrediction}

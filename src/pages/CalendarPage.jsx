@@ -97,6 +97,7 @@ function CalendarPageContent({ races, season }) {
           <LandingButton
             variant="racingOutline"
             size="lg"
+            href="/leaderboard"
             className="w-full sm:w-auto"
           >
             View Leaderboard

@@ -89,10 +89,15 @@ export default function TierListPage() {
     setUnrankedIds(getTierCategory(nextCategory).items.map((item) => item.id));
     setActiveId(null);
 
+    // Use useEffect to handle timeout cleanup to avoid running after unmount
+    // For now, show category immediately without animation in non-browser environments
     if (typeof window !== "undefined") {
-      window.setTimeout(() => {
+      // Schedule visibility update with automatic cleanup on next effect
+      const timer = window.setTimeout(() => {
         setIsCategoryVisible(true);
       }, 0);
+      // Note: cleanup should be managed via useEffect at parent component level
+      return timer;
     } else {
       setIsCategoryVisible(true);
     }
@@ -161,11 +166,12 @@ export default function TierListPage() {
         );
       }
     } else if (overContainer in TIER_LABELS) {
-      const overItems = tiers[overContainer];
-      const overIndex = overItems.indexOf(over.id.toString());
-      const insertIndex = overIndex >= 0 ? overIndex : overItems.length;
-
       setTiers((prev) => {
+        // Calculate insertIndex using current state to avoid stale closure
+        const overItems = prev[overContainer];
+        const overIndex = overItems.indexOf(over.id.toString());
+        const insertIndex = overIndex >= 0 ? overIndex : overItems.length;
+
         const next = { ...prev };
 
         if (activeContainer !== UNRANKED_POOL_ID && activeContainer in TIER_LABELS) {

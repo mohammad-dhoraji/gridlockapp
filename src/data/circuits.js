@@ -48,7 +48,7 @@ export const circuits = [
     name: "COTA",
     fullName: "Circuit of The Americas",
     image: createTierItemImage("COTA", "#4d7cff", "#0a1225"),
-    alt: "Graphic card for Circuit of the Americas"
+    alt: "Graphic card for Circuit of The Americas"
   },
   {
     id: "imola",

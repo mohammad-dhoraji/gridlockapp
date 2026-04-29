@@ -217,10 +217,15 @@ const UpcomingRace = () => {
   const carRef = useRef(null);
   const { data: race, isLoading, isError } = useNextRace();
 
-  const displayRace = race ?? UPCOMING_RACE_FIXTURE;
   const track = useMemo(
-    () => tracks[Number(displayRace?.round)] ?? null,
-    [displayRace?.round],
+    () => {
+      // Only resolve track if race data is loaded and valid
+      if (!race || !race.round) {
+        return null;
+      }
+      return tracks[Number(race.round)] ?? null;
+    },
+    [race],
   );
   const trackPath = track?.path;
   const trackViewBox = track?.viewBox;

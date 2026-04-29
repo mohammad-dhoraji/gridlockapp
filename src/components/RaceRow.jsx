@@ -14,7 +14,16 @@ const formatDate = (dateStr) => {
 
 export default function RaceRow({ race, index, isNext = false }) {
   if (!race) {
-    return null;
+    // Render a loading placeholder instead of null
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-5 items-center gap-4 py-6 px-6 border-b border-border/50 animate-pulse">
+        <div className="h-8 bg-secondary/30 rounded"></div>
+        <div className="h-8 bg-secondary/30 rounded"></div>
+        <div className="h-8 bg-secondary/30 rounded"></div>
+        <div className="h-8 bg-secondary/30 rounded"></div>
+        <div className="h-8 bg-secondary/30 rounded"></div>
+      </div>
+    );
   }
 
   const isUpcoming = race.race_state === "upcoming";

@@ -42,8 +42,8 @@ export function useProfile({ includePredictions = true } = {}) {
   };
 
   return {
-    summary: summaryQuery.data ?? null,
-    predictions: includePredictions ? predictionsQuery.data ?? null : [],
+    summary: summaryQuery.data ?? { predictions: 0, correct: 0, accuracy: 0, points: 0 },
+    predictions: includePredictions ? (predictionsQuery.data ?? []) : [],
     loading,
     error: error || null,
     errorMessage: error?.message || null,

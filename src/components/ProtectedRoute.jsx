@@ -5,7 +5,8 @@ import RouteGateLoader from "./RouteGateLoader";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  const captureMode = isBoneyardCapture();
+  // Only allow capture mode in non-production environments via secure build-time flag
+  const captureMode = process.env.NODE_ENV === 'development' && isBoneyardCapture();
 
   if (captureMode) {
     return children;

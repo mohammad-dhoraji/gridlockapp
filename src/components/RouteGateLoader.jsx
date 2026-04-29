@@ -11,7 +11,7 @@ function RouteGateLoader({
   subtitle = "Preparing your race dashboard...",
 }) {
   return (
-    <div className="min-h-screen bg-linear-to-b from-neutral-800 via-neutral-950 to-black px-6 py-10 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-neutral-800 via-neutral-950 to-black px-6 py-10 text-white">
       <div className="mx-auto flex min-h-[70vh] max-w-5xl items-center justify-center">
         <div className="w-full space-y-6">
           <div className="space-y-3 text-center">

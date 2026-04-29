@@ -1,13 +1,17 @@
 export default function TierToolbar({
   activeCategory,
   setActiveCategory,
-  navItems,
+  navItems = [],
   onHomeClick,
   onReset,
   onExport
 }) {
   const handleExport = () => {
     onExport?.();
+  };
+
+  const handleReset = () => {
+    onReset?.();
   };
 
   return (
@@ -44,15 +48,17 @@ export default function TierToolbar({
 
         <div className="flex items-center gap-4">
           <button
-            onClick={onReset}
-            className="font-f1 text-sm tracking-tight font-medium text-[#e5e2e1]/50 hover:text-[#ffffff] transition-colors scale-95 active:scale-90 transition-transform duration-200"
+            type="button"
+            onClick={handleReset}
+            className="font-f1 text-sm tracking-tight font-medium text-[#e5e2e1]/50 hover:text-[#ffffff] transition scale-95 active:scale-90 duration-200"
           >
 
             Reset
           </button>
           <button
+            type="button"
             onClick={handleExport}
-            className="bg-[#ff3b30] text-white px-5 py-2 rounded-lg font-f1 text-sm tracking-tight font-semibold scale-95 active:scale-90 transition-transform duration-200 hover:bg-[#ff5545]"
+            className="bg-[#ff3b30] text-white px-5 py-2 rounded-lg font-f1 text-sm tracking-tight font-semibold scale-95 active:scale-90 transition duration-200 hover:bg-[#ff5545]"
           >
 
             Export

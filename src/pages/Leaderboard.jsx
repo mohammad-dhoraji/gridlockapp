@@ -50,7 +50,7 @@ const LeaderboardRow = ({ user, isHighlighted = false, className = "" }) => (
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            user.username.slice(0, 2).toUpperCase()
+            (user.username ?? "").slice(0, 2).toUpperCase()
           )}
         </div>
         <span className="font-f1 font-semibold text-foreground truncate text-sm sm:text-base">
@@ -109,7 +109,7 @@ const TopPodium = ({ topThree }) => {
             {user.avatar_url ? (
               <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
             ) : (
-              user.username.slice(0, 2).toUpperCase()
+              (user.username ?? "").slice(0, 2).toUpperCase()
             )}
           </div>
 

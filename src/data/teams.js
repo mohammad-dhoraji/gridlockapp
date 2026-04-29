@@ -13,7 +13,7 @@ export const teams = [
     name: "Ferrari",
     fullName: "Scuderia Ferrari HP",
     image: createTierItemImage("Ferrari", "#dc0000", "#180808"),
-    alt: "Graphic card for Scuderia Ferrari"
+    alt: "Graphic card for Scuderia Ferrari HP"
   },
   {
     id: "red_bull",
@@ -58,10 +58,10 @@ export const teams = [
     alt: "Graphic card for Visa Cash App Racing Bulls Formula One Team"
   },
   {
-    id: "sauber",
-    name: "Sauber",
-    fullName: "Stake F1 Team Kick Sauber",
-    image: createTierItemImage("Sauber", "#52e252", "#081708"),
+    id: "audi",
+    name: "Audi",
+    fullName: "Audi Formula One Team",
+    image: createTierItemImage("audi", "#EB4526", "#000000"),
     alt: "Graphic card for Stake F1 Team Kick Sauber"
   },
   {
@@ -69,6 +69,13 @@ export const teams = [
     name: "Haas",
     fullName: "MoneyGram Haas F1 Team",
     image: createTierItemImage("Haas", "#d0d0d0", "#111111"),
+    alt: "Graphic card for MoneyGram Haas F1 Team"
+  },
+  {
+    id: "cadillac ",
+    name: "Cadillac ",
+    fullName: "Cadillac F1 Team",
+    image: createTierItemImage("Cadillac", "#AAAADD", "#111111"),
     alt: "Graphic card for MoneyGram Haas F1 Team"
   }
 ];

@@ -1,3 +1,6 @@
+// Placeholder image URL for drivers without real images
+const PLACEHOLDER_DRIVER_IMAGE = "https://via.placeholder.com/240x240?text=Driver";
+
 export const drivers = [
   {
     id: "max_verstappen",
@@ -59,70 +62,70 @@ export const drivers = [
     id: "nico_hulkenberg",
     name: "Hulkenberg",
     fullName: "Nico Hulkenberg",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCGjDTWZxRGzH1lQ7Y8K9pMvNlUzK_jK5lRwJ6NP1Hl_8C4T2L9pJ0K7L6M8N9O0P1Q2R3S4T5U6V7W8X9Y0Z1A2B3C",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Professional portrait of an experienced racing driver in studio lighting"
   },
   {
     id: "yuki_tsunoda",
     name: "Tsunoda",
     fullName: "Yuki Tsunoda",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDcEfFgHiIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Focused athletic portrait with cool tones and professional lighting"
   },
   {
     id: "lance_stroll",
     name: "Stroll",
     fullName: "Lance Stroll",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuEgHiIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Studio portrait of a professional racing athlete with dramatic lighting"
   },
   {
     id: "pierre_gasly",
     name: "Gasly",
     fullName: "Pierre Gasly",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuFhIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Professional headshot with subtle background and warm lighting"
   },
   {
     id: "kevin_magnussen",
     name: "Magnussen",
     fullName: "Kevin Magnussen",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuGiIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Experienced driver portrait in classic studio setup"
   },
   {
     id: "alex_albon",
     name: "Albon",
     fullName: "Alex Albon",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuHjIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Professional athlete portrait with cool-toned background"
   },
   {
     id: "zhou_guanyu",
     name: "Zhou",
     fullName: "Zhou Guanyu",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuIkIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Clean professional headshot with minimalist aesthetic"
   },
   {
     id: "esteban_ocon",
     name: "Ocon",
     fullName: "Esteban Ocon",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuJlIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Professional racing driver portrait in bright studio"
   },
   {
     id: "oliver_bearman",
     name: "Bearman",
     fullName: "Oliver Bearman",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuKmIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Young driver portrait with modern styling"
   },
   {
     id: "jack_doohan",
     name: "Doohan",
     fullName: "Jack Doohan",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuLnIjKlLmNoPqRsTuVwXyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBbCdDeF9GhIjKlMnOpQrStUvWxYyZaBb",
+    image: PLACEHOLDER_DRIVER_IMAGE,
     alt: "Professional athlete headshot with clean background"
   }
 ];
